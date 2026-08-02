@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rosa Analítica | Consultoria de dados para médias empresas</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            rose: '#d1216d',       /* Deep Vibrant Rose from Logo */
+                            roseLight: '#fdf2f8',  /* Pastel Pink accent backdrop */
+                            roseDark: '#9d124e',   /* Dark Rose for high-contrast active state */
+                            dark: '#0f172a',       /* Slate 900 for modern corporate feeling */
+                            muted: '#475569',      /* Slate 600 for high-readability body text */
+                            bgLight: '#fffcfd',    /* Super crisp rose-tinted background */
+                            cardBg: '#ffffff',     /* Pure white card backgrounds */
+                            border: '#f1e6ea'      /* Tailored subtle borders */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-shadow {
+            box-shadow: 0 4px 20px -2px rgba(209, 33, 109, 0.04), 0 2px 8px -1px rgba(15, 23, 42, 0.02);
+        }
+        .custom-shadow-hover:hover {
+            box-shadow: 0 20px 35px -5px rgba(209, 33, 109, 0.08), 0 8px 16px -3px rgba(15, 23, 42, 0.03);
+            transform: translateY(-3px);
+            border-color: rgba(209, 33, 109, 0.2);
+        }
+        .geometric-accent {
+            background-image: radial-gradient(circle at 100% 100%, rgba(209, 33, 109, 0.03) 0%, transparent 60%);
+        }
+    </style>
+</head>
+<body class="m-0 p-0 bg-brand-bgLight text-brand-dark font-sans selection:bg-brand-roseLight selection:text-brand-rose overflow-x-hidden">
+
+    <!-- Header e Navegação -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-brand-border custom-shadow m-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center gap-4">
+            
+            <!-- Logo da marca -->
+            <a href="#" class="flex items-center gap-3 group shrink-0">
+                <img src="../assets/Logo Linkedin Rosa Analitica.png" alt="Rosa Analítica" class="h-9 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105">
+                <div class="hidden sm:block border-l border-brand-border pl-3">
+                    <span class="block text-xs font-bold uppercase tracking-widest text-brand-rose">Rosa Analítica</span>
+                    <span class="block text-[9px] font-semibold text-brand-muted tracking-wider">Engenharia de dados</span>
+                </div>
+            </a>
+
+            <!-- Menu de Navegação -->
+            <nav class="hidden lg:flex items-center gap-3 xl:gap-6 shrink-0">
+                <a href="#experiencia" class="nav-link text-[11px] xl:text-xs font-semibold text-brand-muted hover:text-brand-rose whitespace-nowrap border-b-2 border-transparent py-1 transition-all">Desafios</a>
+                <a href="#cultura" class="nav-link text-[11px] xl:text-xs font-semibold text-brand-muted hover:text-brand-rose whitespace-nowrap border-b-2 border-transparent py-1 transition-all">Autonomia</a>
+                <a href="#diferencial" class="nav-link text-[11px] xl:text-xs font-semibold text-brand-muted hover:text-brand-rose whitespace-nowrap border-b-2 border-transparent py-1 transition-all">Filosofia</a>
+                <a href="#transparencia" class="nav-link text-[11px] xl:text-xs font-semibold text-brand-muted hover:text-brand-rose whitespace-nowrap border-b-2 border-transparent py-1 transition-all">Compromisso ético</a>
+                <a href="#potencial" class="nav-link text-[11px] xl:text-xs font-semibold text-brand-muted hover:text-brand-rose whitespace-nowrap border-b-2 border-transparent py-1 transition-all">Ferramentas & tecnologias</a>
+                <a href="#resumo-servicos" class="nav-link text-[11px] xl:text-xs font-semibold text-brand-muted hover:text-brand-rose whitespace-nowrap border-b-2 border-transparent py-1 transition-all">Jornada de serviços</a>
+                <a href="#fundadores" class="nav-link text-[11px] xl:text-xs font-semibold text-brand-muted hover:text-brand-rose whitespace-nowrap border-b-2 border-transparent py-1 transition-all">Quem somos</a>
+            </nav>
+
+            <!-- Botão de ação e menu mobile -->
+            <div class="flex items-center gap-3 shrink-0">
+                <a href="#contato" class="bg-brand-rose hover:bg-brand-roseDark text-white text-xs md:text-sm font-bold px-4 md:px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-envelope text-sm md:text-base"></i> <span>Contato</span>
+                </a>
+
+                <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg text-brand-dark hover:bg-brand-roseLight hover:text-brand-rose focus:outline-none transition-colors" aria-label="Abrir menu">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menu Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-b border-brand-border px-6 py-4 space-y-3 shadow-lg">
+            <a href="#experiencia" class="block text-xs font-semibold text-brand-muted hover:text-brand-rose py-1 transition-colors">Desafios</a>
+            <a href="#cultura" class="block text-xs font-semibold text-brand-muted hover:text-brand-rose py-1 transition-colors">Autonomia na operação</a>
+            <a href="#diferencial" class="block text-xs font-semibold text-brand-muted hover:text-brand-rose py-1 transition-colors">Nossa filosofia</a>
+            <a href="#transparencia" class="block text-xs font-semibold text-brand-muted hover:text-brand-rose py-1 transition-colors">Nosso compromisso ético</a>
+            <a href="#potencial" class="block text-xs font-semibold text-brand-muted hover:text-brand-rose py-1 transition-colors">Tecnologias</a>
+            <a href="#resumo-servicos" class="block text-xs font-semibold text-brand-muted hover:text-brand-rose py-1 transition-colors">Jornada de serviços</a>
+            <a href="#fundadores" class="block text-xs font-semibold text-brand-muted hover:text-brand-rose py-1 transition-colors">Quem somos</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[calc(100vh-73px)] flex items-center py-6 lg:py-8 overflow-hidden bg-gradient-to-b from-brand-roseLight/40 via-brand-bgLight to-slate-50/60">
+        <div class="absolute inset-0 geometric-accent pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 relative z-10 w-full">
+            <!-- Cartão unificado do Hero -->
+            <div class="bg-white border border-brand-border rounded-3xl custom-shadow p-6 md:p-10 lg:p-12">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+                    <!-- Conteúdo de texto do Hero -->
+                    <div class="lg:col-span-7 space-y-4 lg:space-y-5 text-center lg:text-left">
+                        <h1 class="text-3xl md:text-5xl lg:text-5xl font-extrabold text-brand-dark tracking-tight leading-tight">
+                            Sua empresa decide com <span class="text-brand-rose">intuição</span> ou inteligência? 
+                        </h1>
+
+                        <p class="text-brand-muted text-sm md:text-base max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                            Responda rapidamente:
+                        </p>
+
+                        <!-- Mini-quiz estilizado -->
+                        <div class="bg-brand-roseLight/40 border border-brand-rose/15 rounded-2xl p-4 md:p-5 max-w-2xl mx-auto lg:mx-0 space-y-3">
+                            <div class="flex items-start gap-3 text-left">
+                                <span class="shrink-0 w-6 h-6 rounded-full bg-white text-brand-rose text-xs font-extrabold flex items-center justify-center mt-0.5">1</span>
+                                <p class="text-brand-dark text-xs md:text-sm font-medium leading-snug">Quais os indicadores mais importantes para sua empresa?</p>
+                            </div>
+                            <div class="flex items-start gap-3 text-left">
+                                <span class="shrink-0 w-6 h-6 rounded-full bg-white text-brand-rose text-xs font-extrabold flex items-center justify-center mt-0.5">2</span>
+                                <p class="text-brand-dark text-xs md:text-sm font-medium leading-snug">Como foi a evolução deles esse ano? E como eles estão agora?</p>
+                            </div>
+                            <div class="flex items-start gap-3 text-left">
+                                <span class="shrink-0 w-6 h-6 rounded-full bg-white text-brand-rose text-xs font-extrabold flex items-center justify-center mt-0.5">3</span>
+                                <p class="text-brand-dark text-xs md:text-sm font-medium leading-snug">Você tem fácil acesso a esses números atualizados? E, se têm, confia neles?</p>
+                            </div>
+                        </div>
+
+                        <!-- Estatísticas estratégicas -->
+                        <div class="grid grid-cols-3 gap-4 pt-4 border-t border-brand-border/60 max-w-lg mx-auto lg:mx-0">
+                            <div>
+                                <span class="block text-lg md:text-2xl font-extrabold text-brand-rose">Em 91,9%</span>
+                                <span class="block text-[10px] md:text-xs text-brand-muted font-medium tracking-wide">das empresas, os principais problemas são de ineficiência de processos ou pessoas — não falta de dados  <a href="https://www.businesswire.com/news/home/20220103005036/en/NewVantage-Partners-Releases-2022-Data-And-AI-Executive-Survey" target="_blank" rel="noopener noreferrer" class="text-brand-rose hover:underline" title="Estudo McKinsey 2018">Businnes Wire (Berkshire Hathaway)</a> </span>
+                            </div>
+                            <div>
+                                <span class="block text-lg md:text-2xl font-extrabold text-brand-rose">Só 13%</span>
+                                <span class="block text-[10px] md:text-xs text-brand-muted font-medium tracking-wide">
+                                    das empresas realmente toma decisões com base em dados 
+                                    <a href="https://www.mckinsey.com/br/our-insights/transformacoes-digitais-no-brasil" target="_blank" rel="noopener noreferrer" class="text-brand-rose hover:underline" title="Estudo McKinsey 2018">(McKinsey)</a>
+                                </span>
+                            </div>
+                            <div>
+                                <span class="block text-lg md:text-2xl font-extrabold text-brand-rose">300%</span>
+                                <span class="block text-[10px] md:text-xs text-brand-muted font-medium tracking-wide">
+                                    é o crescimento esperado de empresas que passam a dominar seus dados 
+                                    <a href="https://www.mckinsey.com/br/our-insights/transformacoes-digitais-no-brasil" target="_blank" rel="noopener noreferrer" class="text-brand-rose hover:underline" title="Estudo McKinsey 2018">(McKinsey)</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Imagem e cartão visual -->
+                    <div class="lg:col-span-5 flex justify-center items-center">
+                        <div class="relative w-full max-w-md p-5 bg-brand-roseLight/40 border border-brand-rose/15 rounded-2xl">
+                            <div class="absolute -top-5 -left-5 bg-white p-3 rounded-2xl border border-brand-rose/10 shadow-md animate-bounce">
+                                <i class="fa-solid fa-compass text-brand-rose text-xl"></i>
+                            </div>
+
+                            <div class="text-center p-4 space-y-4">
+                                <div class="w-28 h-28 mx-auto rounded-full bg-white flex items-center justify-center border border-brand-rose/10">
+                                    <img src="../assets/Logo Linkedin Rosa Analitica.png" alt="Rosa Analítica" class="w-20 h-20 object-contain">
+                                </div>
+
+                                <div class="space-y-1">
+                                    <h3 class="text-base font-bold text-brand-dark">Te conectamos às informações que você sempre teve, mas não enxergava.</h3>
+                                    <p class="text-xs text-brand-muted">A parte técnica é apenas o plano de fundo. Nosso foco é trazer clareza e eficiência às reuniões das suas equipes e lideranças.</p>
+                                </div>
+
+                                <div class="text-left space-y-2 text-xs text-brand-muted">
+                                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-brand-rose"></i> <span>Reuniões mais <strong>ágeis e direcionadas</strong></span></div>
+                                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-brand-rose"></i> <span><strong>Fim da desconfiança</strong> nos números apresentados</span></div>
+                                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-brand-rose"></i> <span>Tome decisões <strong>mais rápido e com mais segurança</strong></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA principal, abaixo de todo o cartão -->
+            <div class="flex justify-center pt-8">
+                <a href="#contato" class="bg-brand-dark hover:bg-black text-white text-xs md:text-sm font-bold px-8 py-3.5 rounded-full shadow-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane text-brand-rose"></i> Quero decidir com inteligência
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- O Dia a Dia do Executivo -->
+    <section id="experiencia" class="py-20 bg-slate-50 border-t border-brand-border/40">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+                <span class="text-xs font-extrabold text-brand-rose uppercase tracking-widest block">O dia a dia real</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-brand-dark tracking-tight">O dia a dia que desgasta sua liderança</h2>
+                <p class="text-brand-muted text-sm md:text-base leading-relaxed">
+                    Você sente que sua equipe de gestão passa mais tempo arrumando planilhas do que de fato gerando valor? Algum desses exemplos acontece na sua empresa?
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Cartão de dor 1 -->
+                <div class="bg-white border border-brand-border p-8 rounded-2xl custom-shadow hover:border-brand-rose/30 transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose mb-6">
+                        <i class="fa-solid fa-hourglass-half text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-brand-dark mb-3">Ineficiência na preparação</h3>
+                    <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                        Estruturar a reunião mensal de estratégia consome semanas inteiras da equipe. As informações estão espalhadas por várias planilhas instáveis que dependem de ação humana repetitiva e sujeita a erros, gerando estresse e gargalos antes mesmo da apresentação começar.
+                    </p>
+                </div>
+
+                <!-- Cartão de dor 2 -->
+                <div class="bg-white border border-brand-border p-8 rounded-2xl custom-shadow hover:border-brand-rose/30 transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose mb-6">
+                        <i class="fa-solid fa-volume-xmark text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-brand-dark mb-3">Dificuldade na apresentação de resultados</h3>
+                    <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                        Seus gerentes e analistas conhecem a operação, mas quando precisam apresentar, entregam vários números soltos que não provocam insights. O resultado? Quem não vive o dia a dia se depara com dados que não dizem muito e ficam sem bons fundamentos para tomada de decisão.
+                    </p>
+                </div>
+
+                <!-- Cartão de dor 3 -->
+                <div class="bg-white border border-brand-border p-8 rounded-2xl custom-shadow hover:border-brand-rose/30 transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose mb-6">
+                        <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-brand-dark mb-3">Agendas que se perdem</h3>
+                    <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                        A call começa. Nos primeiros dez minutos, alguém questiona os números da apresentação e a partir daí a reunião se torna um debate. Cada um defende o seu lado e sem uma fonte correta, ninguém chega em uma conclusão. Muito tempo é perdido, a pauta real não é discutida e a call precisa ser reagendada.
+                    </p>
+                </div>
+
+                <!-- Cartão de dor 4 -->
+                <div class="bg-white border border-brand-border p-8 rounded-2xl custom-shadow hover:border-brand-rose/30 transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose mb-6">
+                        <i class="fa-solid fa-brain text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-brand-dark mb-3">De volta à boa e velha intuição</h3>
+                    <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                        Como os dados não direcionam as decisões e o time não confia nas métricas apresentadas, todos voltam para a zona de conforto: as decisões baseadas na intuição, no "sempre fizemos assim". Os pontos cegos nunca são enxergados e no melhor dos casos, a empresa estagna. 
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cultura de Dados -->
+    <section id="cultura" class="py-20 bg-gradient-to-b from-slate-50 via-brand-roseLight/20 to-white border-t border-b border-brand-border/60 relative overflow-hidden">
+        <div class="absolute inset-0 geometric-accent pointer-events-none transform rotate-180"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-6 space-y-6">
+                    <span class="text-xs font-extrabold text-brand-rose uppercase tracking-widest block">Como pode ser a sua operação</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-brand-dark tracking-tight leading-tight">
+                        A fluidez de uma cultura de dados bem implementada
+                    </h2>
+                    <p class="text-brand-muted text-sm md:text-base leading-relaxed">
+                        Uma cultura analítica madura não exige desgaste diário para ser mantida. Quando os processos de engenharia estão alinhados e a equipe bem treinada, a consulta e leitura dos dados tornam-se rotinas naturais integradas ao seu time.
+                    </p>
+
+                    <div class="space-y-4 text-brand-muted text-xs md:text-sm">
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-brand-roseLight flex items-center justify-center text-brand-rose shrink-0 mt-0.5">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-brand-dark text-sm">Causa e consequência claras na base</h4>
+                                <p class="text-xs">O valor de uma cultura de dados bem implementada envolve os colaboradores entenderem a causa e consequência de suas ações na empresa. Cada dado inserido reflete no resultado final de várias outras equipes.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-brand-roseLight flex items-center justify-center text-brand-rose shrink-0 mt-0.5">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-brand-dark text-sm">Letramento e autonomia</h4>
+                                <p class="text-xs">Os gestores não precisam minerar dados brutos; as informações de negócio devem sempre ser apresentadas em painéis limpos e objetivos. Um time que pensa usando dados se organiza com muito mais autonomia operacional.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-brand-roseLight flex items-center justify-center text-brand-rose shrink-0 mt-0.5">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-brand-dark text-sm">Entra ouro, saem joias</h4>
+                                <p class="text-xs">O fim das reuniões perdidas. Quando um dado aparece na tela, todos sabem que ele passou por um crivo rigoroso, liberando a pauta para decisões estratégicas e planejamento de futuro.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6 space-y-6">
+                    <div class="bg-brand-dark text-white rounded-3xl p-8 relative overflow-hidden custom-shadow">
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(209,33,109,0.1),transparent_60%)] pointer-events-none"></div>
+                        <div class="space-y-6 relative z-10">
+                            <span class="text-[9px] font-bold text-brand-rose uppercase tracking-widest bg-brand-rose/10 border border-brand-rose/25 px-2.5 py-1 rounded">Sinergia organizacional</span>
+                            <h3 class="text-xl md:text-2xl font-extrabold text-white">A nova dinâmica do time</h3>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                                <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
+                                    <span class="text-brand-rose font-bold uppercase tracking-wider block mb-2"><i class="fa-solid fa-chess-queen mr-1"></i> No topo: A liderança</span>
+                                    <p class="text-slate-300">Trabalha livre da microgestão dos números divergentes. Dedicação exclusiva voltada para <strong>visão, inteligência de mercado e direcionamento estratégico</strong>.</p>
+                                </div>
+
+                                <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
+                                    <span class="text-emerald-400 font-bold uppercase tracking-wider block mb-2"><i class="fa-solid fa-gears mr-1"></i> Na base: A operação</span>
+                                    <p class="text-slate-300">Foca em <strong>eficiência, autonomia de ação e propósito na entrega de resultados</strong>. Cada membro entende o impacto do seu trabalho na organização.</p>
+                                </div>
+
+                                <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
+                                    <span class="text-sky-400 font-bold uppercase tracking-wider block mb-2"><i class="fa-solid fa-server mr-1"></i> Nos bastidores</span>
+                                    <p class="text-slate-300">Organizando todo o ecossistema para as informações estarem disponíveis de maneira <strong>fácil, rápida e confiável</strong>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Quem Somos -->
+    <section id="fundadores" class="py-20 bg-gradient-to-b from-white via-slate-50 to-brand-roseLight/20 border-b border-brand-border relative">
+        <div class="max-w-7xl mx-auto px-6">
+            
+            <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+                <span class="text-xs font-extrabold text-brand-rose uppercase tracking-widest block">Quem somos</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-brand-dark tracking-tight">
+                    Liderança executiva & experiência de mercado
+                </h2>
+                <p class="text-brand-muted text-sm md:text-base leading-relaxed">
+                    Nosso objetivo como empresa é trazer maturidade tecnológica, governança de dados e inteligência analítica aos nossos clientes de maneira personalizada e ágil.
+                </p>
+            </div>
+
+            <!-- Cards dos Sócios -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- João Otávio -->
+                <div class="bg-white border border-brand-border p-8 rounded-3xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <!-- Foto João Otávio -->
+                            <img src="../assets/Joao.png" alt="João Otávio Ramos" class="w-14 h-14 rounded-2xl object-cover shadow-md shrink-0 border border-brand-border">
+                            <div>
+                                <h3 class="text-xl font-extrabold text-brand-dark">João Otávio Ramos</h3>
+                                <span class="text-xs font-bold text-brand-rose tracking-wider block">Sócio fundador & especialista em análise de dados</span>
+                            </div>
+                        </div>
+                        
+                        <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                            Economista pela UFABC com trajetória em análise e fluxos de dados do início ao fim, migração de sistemas complexos e governança. Experiência na otimização de fluxos corporativos em instituições financeiras, no setor de agronegócio e em empresas de tecnologia.
+                        </p>
+
+                        <div class="pt-3">
+                            <span class="text-[10px] font-extrabold text-brand-dark uppercase tracking-wider block mb-2">
+                                <i class="fa-solid fa-briefcase text-brand-rose mr-1"></i> Experiência em empresas & setores
+                            </span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="bg-slate-50 border border-brand-border text-brand-dark text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">Itaú Unibanco</span>
+                                <span class="bg-slate-50 border border-brand-border text-brand-dark text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">Bradesco</span>
+                                <span class="bg-slate-50 border border-brand-border text-brand-dark text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">Polly.io</span>
+                                <span class="bg-slate-50 border border-brand-border text-brand-dark text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">Louis Dreyfus Company</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-brand-border/60 mt-6 flex items-center justify-between text-xs text-brand-muted">
+                        <span class="font-semibold text-brand-dark"><i class="fa-solid fa-check-circle text-brand-rose mr-1"></i> Análise e cultura de dados</span>
+                        <a href="https://www.linkedin.com/in/joaootavioramos" target="_blank" class="text-brand-rose hover:underline font-bold flex items-center gap-1">
+                            <i class="fa-brands fa-linkedin"></i> LinkedIn
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Leo Gianotti -->
+                <div class="bg-white border border-brand-border p-8 rounded-3xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <!-- Foto Leo Gianotti -->
+                            <img src="../assets/Leo.png" alt="Leo Gianotti" class="w-14 h-14 rounded-2xl object-cover shadow-md shrink-0 border border-brand-border">
+                            <div>
+                                <h3 class="text-xl font-extrabold text-brand-dark">Leo Gianotti</h3>
+                                <span class="text-xs font-bold text-brand-rose tracking-wider block">Sócio fundador & especialista em engenharia de dados</span>
+                            </div>
+                        </div>
+                        
+                        <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                            Formado em Estatística e Ciência de Dados pela USP, é especialista em Power BI e tem vasta experiência no desenvolvimento de sistemas analíticos, modelagem de dados e inteligência de negócios direcionada a operações, área financeira e logística.
+                        </p>
+
+                        <div class="pt-3">
+                            <span class="text-[10px] font-extrabold text-brand-dark uppercase tracking-wider block mb-2">
+                                <i class="fa-solid fa-laptop-code text-brand-rose mr-1"></i> Tecnologias & especialidades
+                            </span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="bg-slate-50 border border-brand-border text-brand-dark text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">Snowflake</span>
+                                <span class="bg-slate-50 border border-brand-border text-brand-dark text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">dbt</span>
+                                <span class="bg-slate-50 border border-brand-border text-brand-dark text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">Microsoft Fabric</span>
+                                <span class="bg-slate-50 border border-brand-border text-brand-dark text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">BigQuery</span>
+                                <span class="bg-slate-50 border border-brand-border text-brand-dark text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">Power BI</span>
+                                <span class="bg-slate-50 border border-brand-border text-brand-dark text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">Python & SQL</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-brand-border/60 mt-6 flex items-center justify-between text-xs text-brand-muted">
+                        <span class="font-semibold text-brand-dark"><i class="fa-solid fa-check-circle text-brand-rose mr-1"></i> Arquitetura de dados</span>
+                        <a href="https://www.linkedin.com/in/leo-gianotti-48124a20a/" target="_blank" class="text-brand-rose hover:underline font-bold flex items-center gap-1">
+                            <i class="fa-brands fa-linkedin"></i> LinkedIn
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Empresas com experiência acumulada -->
+            <div class="bg-white border border-brand-border rounded-2xl p-6 mt-12 custom-shadow">
+                <span class="block text-center text-[10px] font-extrabold uppercase tracking-widest text-brand-rose mb-6">
+                    <i class="fa-solid fa-briefcase mr-1"></i> Bagagem acumulada em líderes nacionais e internacionais
+                </span>
+                <div class="flex flex-wrap justify-center items-center gap-6 md:gap-10">
+                    <div class="bg-slate-50 px-5 py-3 rounded-xl border border-brand-border custom-shadow flex items-center justify-center hover:scale-105 transition-transform">
+                        <img src="../assets/Itau (1).png" alt="Itaú Unibanco" class="h-8 md:h-10 w-auto object-contain">
+                    </div>
+                    <div class="bg-slate-50 px-5 py-3 rounded-xl border border-brand-border custom-shadow flex items-center justify-center hover:scale-105 transition-transform">
+                        <img src="../assets/bradesco (1).png" alt="Bradesco" class="h-8 md:h-10 w-auto object-contain">
+                    </div>
+                    <div class="bg-slate-50 px-5 py-3 rounded-xl border border-brand-border custom-shadow flex items-center justify-center hover:scale-105 transition-transform">
+                        <img src="../assets/Exxon (1).png" alt="ExxonMobil" class="h-8 md:h-10 w-auto object-contain">
+                    </div>
+                    <div class="bg-slate-50 px-5 py-3 rounded-xl border border-brand-border custom-shadow flex items-center justify-center hover:scale-105 transition-transform">
+                        <img src="../assets/Bayer (1).png" alt="Bayer" class="h-8 md:h-10 w-auto object-contain">
+                    </div>
+                    <div class="bg-slate-50 px-5 py-3 rounded-xl border border-brand-border custom-shadow flex items-center justify-center hover:scale-105 transition-transform">
+                        <img src="../assets/3m (1).png" alt="3M" class="h-8 md:h-10 w-auto object-contain">
+                    </div>
+                    <div class="bg-slate-50 px-5 py-3 rounded-xl border border-brand-border custom-shadow flex items-center justify-center hover:scale-105 transition-transform">
+                        <img src="../assets/LDC (1).png" alt="LDC" class="h-8 md:h-10 w-auto object-contain">
+                    </div>
+                    <div class="bg-slate-50 px-5 py-3 rounded-xl border border-brand-border custom-shadow flex items-center justify-center hover:scale-105 transition-transform">
+                        <img src="../assets/Boticario(1).png" alt="Grupo Boticário" class="h-8 md:h-10 w-auto object-contain">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Bloco: Diferencial Estratégico -->
+    <section id="diferencial" class="py-20 bg-white border-b border-brand-border/60 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+                <span class="text-xs font-extrabold text-brand-rose uppercase tracking-widest block">Nossa filosofia</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-brand-dark tracking-tight">O que pensamos diferente</h2>
+                <p class="text-brand-muted text-sm md:text-base leading-relaxed">
+                    A tecnologia é a engrenagem, mas as pessoas e a cultura crítica de diagnóstico são o motor de crescimento. Não entregamos relatórios estáticos; capacitamos sua equipe para transformar números em perguntas certas e ações imediatas.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Cartão diferencial 1 -->
+                <div class="bg-slate-50/60 border border-brand-border p-8 md:p-10 rounded-3xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-5">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-brand-roseLight text-brand-rose flex items-center justify-center text-2xl font-bold shrink-0">
+                                <i class="fa-solid fa-people-line"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-extrabold uppercase tracking-widest text-brand-rose block">Fator humano em primeiro lugar</span>
+                                <h3 class="text-xl md:text-2xl font-extrabold text-brand-dark">Cultura e capacitação mudam o jogo</h3>
+                            </div>
+                        </div>
+
+                        <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                            Business Intelligence é só a ferramenta — capacitar pessoas e criar uma cultura crítica é o que realmente impulsiona o crescimento. Não entregamos só relatórios e automações: temos experiência em capacitar equipes no consumo de dados e na tomada de decisões com base neles.
+                        </p>
+
+                        <div class="bg-brand-roseLight/40 border-l-4 border-brand-rose p-4 rounded-r-2xl space-y-1">
+                            <span class="text-[10px] font-bold text-brand-rose uppercase tracking-wider block"><i class="fa-solid fa-quote-left mr-1"></i> O papel real das métricas</span>
+                            <p class="text-brand-dark text-xs font-semibold italic">
+                                "Os números não são a resposta final — são o ponto de partida. Eles geram as perguntas certas, e é respondendo essas perguntas que a empresa cresce."
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-brand-border/60 mt-8 flex items-center gap-2 text-xs font-bold text-brand-dark">
+                        <i class="fa-solid fa-graduation-cap text-brand-rose text-base"></i> Transferência contínua de autonomia e conhecimentos práticos
+                    </div>
+                </div>
+
+                <!-- Cartão diferencial 2 -->
+                <div class="bg-slate-50/60 border border-brand-border p-8 md:p-10 rounded-3xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-5">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-brand-roseLight text-brand-rose flex items-center justify-center text-2xl font-bold shrink-0">
+                                <i class="fa-solid fa-puzzle-piece"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-extrabold uppercase tracking-widest text-brand-rose block">Nos moldamos às suas necessidades</span>
+                                <h3 class="text-xl md:text-2xl font-extrabold text-brand-dark">Personalização completa para atender suas dores</h3>
+                            </div>
+                        </div>
+
+                        <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                            Nossas soluções não são padronizadas: queremos entender o que mais importa para o seu negócio. Você traz os problemas, e nós buscamos as soluções que mais fazem sentido para o seu contexto.
+                        </p>
+
+                        <div class="bg-brand-roseLight/40 border-l-4 border-brand-rose p-4 rounded-r-2xl space-y-1">
+                            <span class="text-[10px] font-bold text-brand-rose uppercase tracking-wider block"><i class="fa-solid fa-quote-left mr-1"></i> Utilidade acima de tudo</span>
+                            <p class="text-brand-dark text-xs font-semibold italic">
+                                "A melhor solução do mundo não vale nada se ela não couber na rotina de quem vai usar."
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-brand-border/60 mt-8 flex items-center gap-2 text-xs font-bold text-brand-dark">
+                        <i class="fa-solid fa-sliders text-brand-rose text-base"></i> Soluções desenhadas sob medida para o seu negócio
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compromisso com a Transparência -->
+    <section id="transparencia" class="py-20 bg-slate-50/70 border-b border-brand-border/60">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+                <span class="text-xs font-extrabold text-brand-rose uppercase tracking-widest block">Nosso compromisso ético</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-brand-dark tracking-tight">Transparência tecnológica</h2>
+                <p class="text-brand-muted text-sm md:text-base">
+                    Não vendemos pacotes pré-formatados de relatórios; nossos serviços são personalizados para a realidade do seu negócio. O que oferecemos é direcionamento e <strong>transparência</strong> sobre os motivos de sugerirmos cada tecnologia.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Pilar 1 -->
+                <div class="bg-white border border-brand-border p-6 rounded-2xl hover:border-brand-rose/20 transition-all custom-shadow flex flex-col justify-between">
+                    <div>
+                        <div class="w-10 h-10 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose font-bold mb-4">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <h4 class="font-extrabold text-brand-dark text-base mb-2">Escalabilidade</h4>
+                        <p class="text-brand-muted text-xs leading-relaxed">
+                            Deixamos claro quanto sua empresa poderá crescer e expandir sua estrutura sem que a infraestrutura instalada enfrente gargalos ou custos desalinhados.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Pilar 2 -->
+                <div class="bg-white border border-brand-border p-6 rounded-2xl hover:border-brand-rose/20 transition-all custom-shadow flex flex-col justify-between">
+                    <div>
+                        <div class="w-10 h-10 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose font-bold mb-4">
+                            <i class="fa-solid fa-database"></i>
+                        </div>
+                        <h4 class="font-extrabold text-brand-dark text-base mb-2">Eficiência em primeiro lugar</h4>
+                        <p class="text-brand-muted text-xs leading-relaxed">
+                            Nem todo dado produzido pelo negócio precisa ser guardado ou processado. Filtramos o que realmente gera valor prático e indicamos a ferramenta adequada para cada contexto.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Pilar 3 -->
+                <div class="bg-white border border-brand-border p-6 rounded-2xl hover:border-brand-rose/20 transition-all custom-shadow flex flex-col justify-between">
+                    <div>
+                        <div class="w-10 h-10 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose font-bold mb-4">
+                            <i class="fa-solid fa-file-signature"></i>
+                        </div>
+                        <h4 class="font-extrabold text-brand-dark text-base mb-2">Documentação & mercado</h4>
+                        <p class="text-brand-muted text-xs leading-relaxed">
+                            Garantimos a sua independência de nós. Escolhemos tecnologias consolidadas no mercado para que sua equipe interna possa assumir o sistema sem dificuldades no futuro.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Pilar 4 -->
+                <div class="bg-white border border-brand-border p-6 rounded-2xl hover:border-brand-rose/20 transition-all custom-shadow flex flex-col justify-between">
+                    <div>
+                        <div class="w-10 h-10 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose font-bold mb-4">
+                            <i class="fa-solid fa-wrench"></i>
+                        </div>
+                        <h4 class="font-extrabold text-brand-dark text-base mb-2">Manutenção & riscos</h4>
+                        <p class="text-brand-muted text-xs leading-relaxed">
+                            Mapeamos detalhadamente os pontos de atenção e riscos do sistema. Você entende de antemão onde são necessários cuidados específicos para manter a operação em dia.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tecnologias e Potencial -->
+    <section id="potencial" class="py-20 bg-gradient-to-b from-slate-50 via-brand-roseLight/15 to-white border-b border-brand-border relative overflow-hidden">
+        <div class="absolute inset-0 geometric-accent pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+                <span class="text-xs font-extrabold text-brand-rose uppercase tracking-widest block">Ferramentas técnicas & engenharia</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-brand-dark tracking-tight">Capacidade multicloud & engenharia de dados</h2>
+                <p class="text-brand-muted text-sm md:text-base leading-relaxed">
+                    Construímos arquiteturas de dados escaláveis, resilientes e alinhadas aos melhores padrões de software. Da ingestão à governança, conheça as tecnologias que utilizamos.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Bloco 1: DW & Lakehouse -->
+                <div class="bg-white/80 border border-brand-border p-8 rounded-3xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-brand-roseLight text-brand-rose flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-database"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-brand-rose uppercase tracking-widest block">Data Warehousing & Lakehouse</span>
+                                <h3 class="text-lg font-bold text-brand-dark">Processamento & armazenamento em nuvem</h3>
+                            </div>
+                        </div>
+                        <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                            Modelagem e implementação de warehouses com separação nativa de storage e compute. Suporte a cargas de alta concorrência, otimização de consultas e previsibilidade de custos.
+                        </p>
+                        
+                        <div class="pt-2 space-y-2">
+                            <span class="text-[10px] font-extrabold text-brand-dark uppercase tracking-wider block">Ferramentas & plataformas:</span>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Snowflake</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Google BigQuery</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">AWS (S3, Redshift, Glue, EMR)</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Microsoft Fabric (OneLake, Synapse)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloco 2: Transformação & Modelagem -->
+                <div class="bg-white/80 border border-brand-border p-8 rounded-3xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-brand-roseLight text-brand-rose flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-diagram-project"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-brand-rose uppercase tracking-widest block">Transformação & modelagem de dados</span>
+                                <h3 class="text-lg font-bold text-brand-dark">Pipelines ELT & modelagem dimensional</h3>
+                            </div>
+                        </div>
+                        <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                            Transformação de dados via código modular, testes automatizados e documentação contínua. Estruturação em esquemas dimensionais otimizados para consumo analítico.
+                        </p>
+                        
+                        <div class="pt-2 space-y-2">
+                            <span class="text-[10px] font-extrabold text-brand-dark uppercase tracking-wider block">Ferramentas & linguagens:</span>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">dbt (data build tool)</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Python (Pandas, Polars, PySpark)</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">SQL avançado</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Modelagem Kimball / Data Vault</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloco 3: DataOps & CI/CD -->
+                <div class="bg-white/80 border border-brand-border p-8 rounded-3xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-brand-roseLight text-brand-rose flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-code-branch"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-brand-rose uppercase tracking-widest block">DataOps & versionamento</span>
+                                <h3 class="text-lg font-bold text-brand-dark">CI/CD & observabilidade de pipelines</h3>
+                            </div>
+                        </div>
+                        <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                            Aplicação das melhores práticas de software no fluxo analítico: ambientes isolados (Dev, Staging, Prod), controle de versão via Git e automação de testes.
+                        </p>
+                        
+                        <div class="pt-2 space-y-2">
+                            <span class="text-[10px] font-extrabold text-brand-dark uppercase tracking-wider block">Ferramentas & práticas:</span>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Git & GitHub / GitLab</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">GitHub Actions (CI/CD)</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">dbt Tests & Quality Checks</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloco 4: Governança, MDM & Data Quality -->
+                <div class="bg-white/80 border border-brand-border p-8 rounded-3xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-brand-roseLight text-brand-rose flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-brand-rose uppercase tracking-widest block">Governança & qualidade dos dados</span>
+                                <h3 class="text-lg font-bold text-brand-dark">Master Data Management (MDM) & linhagem</h3>
+                            </div>
+                        </div>
+                        <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                            Organização de cadastros e eliminação de registros duplicados nos sistemas da empresa. Garantia de consistência, controle de acesso e rastreabilidade ponta a ponta.
+                        </p>
+                        
+                        <div class="pt-2 space-y-2">
+                            <span class="text-[10px] font-extrabold text-brand-dark uppercase tracking-wider block">Ferramentas & plataformas:</span>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">TIBCO EBX (MDM)</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Alteryx</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Python Data Quality Scripts</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloco 5: Visualização & BI -->
+                <div class="bg-white/80 border border-brand-border p-8 rounded-3xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-brand-roseLight text-brand-rose flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-brand-rose uppercase tracking-widest block">Visualização & Business Intelligence</span>
+                                <h3 class="text-lg font-bold text-brand-dark">Painéis claros para decisões rápidas</h3>
+                            </div>
+                        </div>
+                        <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                            Construção de dashboards e relatórios interativos que traduzem dados brutos em informação fácil de entender para qualquer pessoa da equipe, técnica ou não.
+                        </p>
+                        
+                        <div class="pt-2 space-y-2">
+                            <span class="text-[10px] font-extrabold text-brand-dark uppercase tracking-wider block">Ferramentas & plataformas:</span>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Power BI</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Looker</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Tableau</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloco 6: Automações -->
+                <div class="bg-white/80 border border-brand-border p-8 rounded-3xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-brand-roseLight text-brand-rose flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-brand-rose uppercase tracking-widest block">Automações</span>
+                                <h3 class="text-lg font-bold text-brand-dark">Menos tarefa manual, mais tempo estratégico</h3>
+                            </div>
+                        </div>
+                        <p class="text-brand-muted text-xs md:text-sm leading-relaxed">
+                            Automatização de envio de e-mails, relatórios recorrentes e tarefas repetitivas, liberando sua equipe para focar no que realmente importa.
+                        </p>
+                        
+                        <div class="pt-2 space-y-2">
+                            <span class="text-[10px] font-extrabold text-brand-dark uppercase tracking-wider block">Ferramentas & plataformas:</span>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Power Automate</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Google Apps Script</span>
+                                <span class="bg-slate-50 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-lg border border-brand-border shadow-sm">Google Workspace</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 bg-white border border-brand-border rounded-2xl p-6 text-center max-w-3xl mx-auto space-y-2 custom-shadow">
+                <span class="text-brand-rose font-bold text-xs uppercase tracking-widest block"><i class="fa-solid fa-gears mr-1"></i> Padrões de engenharia corporativa</span>
+                <p class="text-brand-muted text-xs leading-relaxed">
+                    Priorizamos segurança por design (LGPD), desacoplamento e documentação auditável. A escolha das ferramentas é adaptada ao volume de dados e aos objetivos do seu projeto.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resumo dos Nossos Serviços -->
+    <section id="resumo-servicos" class="py-20 bg-white border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+                <span class="text-xs font-extrabold text-brand-rose uppercase tracking-widest block">Metodologia de entrega</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-brand-dark tracking-tight">Resumo dos nossos serviços</h2>
+                <p class="text-brand-muted text-sm md:text-base leading-relaxed">
+                    Uma jornada estruturada e transparente em etapas para garantir alinhamento estratégico, acompanhamento contínuo e autonomia final para a sua empresa.
+                </p>
+            </div>
+
+            <!-- Grid de Passos da Jornada -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                <div class="bg-slate-50/50 border border-brand-border p-6 rounded-2xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose font-extrabold text-sm">
+                            01
+                        </div>
+                        <h3 class="text-base font-extrabold text-brand-dark">Reunião inicial</h3>
+                        <p class="text-brand-muted text-xs leading-relaxed">
+                            Bate-papo para entender as dores da empresa, sua estrutura atual e visão de futuro.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/50 border border-brand-border p-6 rounded-2xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose font-extrabold text-sm">
+                            02
+                        </div>
+                        <h3 class="text-base font-extrabold text-brand-dark">Entrega da primeira análise</h3>
+                        <p class="text-brand-muted text-xs leading-relaxed">
+                            Identificamos os pontos críticos da empresa e oferecemos propostas de soluções práticas.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/50 border border-brand-border p-6 rounded-2xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose font-extrabold text-sm">
+                            03
+                        </div>
+                        <h3 class="text-base font-extrabold text-brand-dark">Andamento da entrega</h3>
+                        <p class="text-brand-muted text-xs leading-relaxed">
+                            Fechado o contrato, conversamos com as lideranças da empresa para mapear os gargalos operacionais.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/50 border border-brand-border p-6 rounded-2xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose font-extrabold text-sm">
+                            04
+                        </div>
+                        <h3 class="text-base font-extrabold text-brand-dark">Primeiro ponto de checagem</h3>
+                        <p class="text-brand-muted text-xs leading-relaxed">
+                            Ajustes no projeto baseados no feedback das equipes, alinhamento do escopo e início da execução.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/50 border border-brand-border p-6 rounded-2xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose font-extrabold text-sm">
+                            05
+                        </div>
+                        <h3 class="text-base font-extrabold text-brand-dark">Trabalho técnico</h3>
+                        <p class="text-brand-muted text-xs leading-relaxed">
+                            Execução da engenharia e modelagem de dados, construção dos fluxos automatizados e validação.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/50 border border-brand-border p-6 rounded-2xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose font-extrabold text-sm">
+                            06
+                        </div>
+                        <h3 class="text-base font-extrabold text-brand-dark">Acompanhamento semanal</h3>
+                        <p class="text-brand-muted text-xs leading-relaxed">
+                            Durante o desenvolvimento, enviamos um resumo semanal para que a liderança acompanhe cada avanço.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/50 border border-brand-border p-6 rounded-2xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose font-extrabold text-sm">
+                            07
+                        </div>
+                        <h3 class="text-base font-extrabold text-brand-dark">Capacitação & orientação</h3>
+                        <p class="text-brand-muted text-xs leading-relaxed">
+                            Explicamos a utilização e os conceitos dos novos painéis para todas as áreas afetadas pelo projeto.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/50 border border-brand-border p-6 rounded-2xl custom-shadow hover:border-brand-rose/30 transition-all flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-10 h-10 rounded-xl bg-brand-roseLight flex items-center justify-center text-brand-rose font-extrabold text-sm">
+                            08
+                        </div>
+                        <h3 class="text-base font-extrabold text-brand-dark">Melhoria contínua ou transição</h3>
+                        <p class="text-brand-muted text-xs leading-relaxed">
+                            Seguimos com suporte para evolução do projeto ou auxiliamos na capacitação do seu time interno.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Atendimento Direto / Contato -->
+    <section id="contato" class="py-20 bg-brand-dark relative overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(209,33,109,0.15),transparent_60%)] pointer-events-none"></div>
+        <div class="max-w-6xl mx-auto px-6 relative z-10">
+            <div class="bg-white/5 border border-white/10 backdrop-blur-sm p-8 md:p-12 rounded-3xl flex flex-col md:flex-row items-center gap-10">
+
+                <!-- Coluna esquerda: ações de contato -->
+                <div class="w-full md:w-auto md:shrink-0 flex flex-col items-center md:items-start gap-4 order-2 md:order-1">
+                    <a href="https://wa.me/5511939421456?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20gostaria%20de%20entender%20um%20pouco%20mais%20sobre%20o%20servi%C3%A7o" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs md:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-7 py-3.5 rounded-full transition-all shadow-md">
+                        <i class="fa-brands fa-whatsapp text-lg"></i> Conversar pelo WhatsApp
+                    </a>
+                    <a href="mailto:contato@rosaanalitica.com.br" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs md:text-sm font-bold text-brand-rose bg-brand-rose/10 border border-brand-rose/25 hover:bg-brand-rose/20 px-7 py-3.5 rounded-full transition-all shadow-sm">
+                        <i class="fa-solid fa-envelope text-base"></i> contato@rosaanalitica.com.br
+                    </a>
+
+                    <div class="pt-3 border-t border-white/10 w-full flex flex-wrap justify-center md:justify-start items-center gap-3 mt-1">
+                        <a href="https://www.linkedin.com/company/rosa-analitica" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-bold text-white bg-white/5 border border-white/10 hover:border-brand-rose/40 hover:text-brand-rose px-5 py-2.5 rounded-full transition-all">
+                            <i class="fa-brands fa-linkedin text-base"></i> LinkedIn corporativo
+                        </a>
+                        <a href="https://www.instagram.com/rosaanalitica/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-bold text-white bg-white/5 border border-white/10 hover:border-brand-rose/40 hover:text-brand-rose px-5 py-2.5 rounded-full transition-all">
+                            <i class="fa-brands fa-instagram text-base"></i> @rosaanalitica
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Coluna direita: texto -->
+                <div class="space-y-4 text-center md:text-right order-1 md:order-2 md:ml-auto">
+                    <span class="text-xs font-extrabold text-brand-rose uppercase tracking-widest block">Acabe com a ineficiência hoje</span>
+                    <h2 class="text-3xl font-extrabold text-white tracking-tight">Diagnóstico estratégico personalizado</h2>
+                    <p class="text-slate-300 text-xs md:text-sm max-w-2xl mx-auto md:mx-0 md:ml-auto leading-relaxed">
+                        Avaliamos suas rotinas operacionais de forma estruturada. Converse diretamente com nossos fundadores e entenda onde estão as oportunidades de evolução do seu negócio.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Rodapé -->
+    <footer class="bg-brand-dark text-white border-t border-brand-border/15 py-12 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 border-b border-white/10 pb-12 mb-8">
+            <div class="md:col-span-4 space-y-4">
+                <div class="flex items-center gap-3">
+                    <img src="../assets/Logo Linkedin Rosa Analitica.png" alt="Rosa Analítica" class="h-10 w-auto bg-white p-1 rounded">
+                    <div>
+                        <span class="block text-xs font-bold uppercase tracking-widest text-brand-rose">Rosa Analítica</span>
+                        <span class="block text-[8px] font-semibold text-slate-400 tracking-wider">Engenharia de dados</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Unimos engenharia às tomadas de decisão executiva nas médias empresas brasileiras.
+                </p>
+            </div>
+
+            <div class="md:col-span-4 space-y-4">
+                <span class="block text-xs font-bold text-brand-rose uppercase tracking-widest">Navegação</span>
+                <div class="grid grid-cols-2 gap-2 text-xs text-slate-400">
+                    <a href="#experiencia" class="hover:text-white transition-colors">O dia a dia</a>
+                    <a href="#cultura" class="hover:text-white transition-colors">Cultura de dados</a>
+                    <a href="#diferencial" class="hover:text-white transition-colors">Diferencial estratégico</a>
+                    <a href="#transparencia" class="hover:text-white transition-colors">Nossos pilares</a>
+                    <a href="#potencial" class="hover:text-white transition-colors">Tecnologias</a>
+                    <a href="#resumo-servicos" class="hover:text-white transition-colors">Jornada de serviços</a>
+                    <a href="#fundadores" class="hover:text-white transition-colors">Quem somos</a>
+                    <a href="#contato" class="hover:text-white transition-colors">Contato</a>
+                </div>
+            </div>
+
+            <div class="md:col-span-4 space-y-4">
+                <span class="block text-xs font-bold text-brand-rose uppercase tracking-widest">Contatos e redes sociais</span>
+                <div class="text-xs text-slate-400 space-y-3">
+                    <p class="flex items-center gap-2">
+                        <i class="fa-solid fa-envelope text-brand-rose"></i>
+                        <a href="mailto:contato@rosaanalitica.com.br" class="hover:text-white transition-colors">contato@rosaanalitica.com.br</a>
+                    </p>
+                    <p class="flex items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-emerald-500"></i>
+                        <a href="https://wa.me/5511939421456?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20gostaria%20de%20entender%20um%20pouco%20mais%20sobre%20o%20servi%C3%A7o" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">WhatsApp corporativo</a>
+                    </p>
+
+                    <div class="flex items-center gap-3 pt-1">
+                        <a href="https://www.linkedin.com/company/rosa-analitica" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-rose text-white flex items-center justify-center transition-all" title="LinkedIn Rosa Analítica">
+                            <i class="fa-brands fa-linkedin text-sm"></i>
+                        </a>
+                        <a href="https://www.instagram.com/rosaanalitica/" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-rose text-white flex items-center justify-center transition-all" title="Instagram @rosaanalitica">
+                            <i class="fa-brands fa-instagram text-sm"></i>
+                        </a>
+                    </div>
+
+                    <p class="text-[11px] text-slate-500 pt-1">
+                        São Paulo / SP • Atendimento nacional
+                    </p>
+                </div>
+                <div class="flex gap-4 font-semibold text-[10px] text-slate-400 pt-2">
+                    <span>Versão 3.1</span>
+                    <span>•</span>
+                    <span>© 2026 Rosa Analítica</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-slate-400">
+            <p>Confidencialidade assegurada. Todos os dados compartilhados são de caráter restrito e confidencial corporativo.</p>
+            <div class="flex gap-4 font-semibold text-white">
+                <a href="#" class="hover:text-brand-rose transition-all">LGPD Compliance</a>
+                <span>•</span>
+                <a href="#" class="hover:text-brand-rose transition-all">Termos de uso</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts de navegação -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (mobileBtn && mobileMenu) {
+                mobileBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+
+                mobileMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.add('hidden');
+                    });
+                });
+            }
+
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('nav .nav-link');
+
+            const activeClasses = ['text-brand-rose', 'border-brand-rose', 'font-bold'];
+            const inactiveClasses = ['text-brand-muted', 'border-transparent', 'font-semibold'];
+
+            function highlightNavOnScroll() {
+                const scrollPosition = window.scrollY + 200;
+                let currentSectionId = '';
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.offsetHeight;
+
+                    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                        currentSectionId = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    const href = link.getAttribute('href').replace('#', '');
+                    if (href === currentSectionId) {
+                        link.classList.add(...activeClasses);
+                        link.classList.remove(...inactiveClasses);
+                    } else {
+                        link.classList.remove(...activeClasses);
+                        link.classList.add(...inactiveClasses);
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', highlightNavOnScroll);
+            highlightNavOnScroll();
+        });
+    </script>
+</body>
+</html>
