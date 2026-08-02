@@ -1,0 +1,19 @@
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Editor folders
+.vscode/
+.idea/
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+
+# Local environment files
+.env
+.env.*
+
+# Python local server cache
+__pycache__/

@@ -44,6 +44,17 @@ python -m http.server 8000
 
 Then open `http://localhost:8000`.
 
+## Deployment baseline
+
+This repository is ready to be deployed as a plain static site.
+
+- `index.html` is the site entry point.
+- All local images live under `assets/`.
+- `.nojekyll` is included so static hosts compatible with GitHub Pages do not run Jekyll processing.
+- No build step is required.
+
+Any static host that serves the repository root as a website should work.
+
 ## Notes
 
 - The repository import included the HTML snapshots provided by the user.
