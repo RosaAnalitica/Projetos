@@ -4,7 +4,7 @@ Static marketing website for Rosa Analitica.
 
 ## Current version
 
-The current site entry point is `index.html`, based on the latest available snapshot (`site_v2`).
+The current site entry point is `index.html`, now at v4 after the hero visual-card alignment fixes (see `VERSION_HISTORY.md`).
 
 ## Stack
 
@@ -24,7 +24,8 @@ The current site entry point is `index.html`, based on the latest available snap
 `-- archive/
     |-- site_v0.html
     |-- site_v1.html
-    `-- site_v2.html
+    |-- site_v2.html
+    `-- site_v3.html
 ```
 
 ## Version archive
@@ -59,4 +60,4 @@ Any static host that serves the repository root as a website should work.
 
 - The repository import included the HTML snapshots provided by the user.
 - The image assets from the shared OneDrive folder were imported into `assets/` and the HTML files were repointed to those local paths.
-- See `VERSION_HISTORY.md` for the reconstructed change log between `v0`, `v1`, and `v2`.
+- See `VERSION_HISTORY.md` for the reconstructed change log between `v0`, `v1`, `v2`, `v3`, and `v4`.

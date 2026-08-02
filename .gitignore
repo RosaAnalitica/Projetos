@@ -17,3 +17,6 @@ Desktop.ini
 
 # Python local server cache
 __pycache__/
+
+# Local dev-only tooling
+.tools/

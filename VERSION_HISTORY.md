@@ -7,7 +7,8 @@ This file reconstructs the website history from the standalone HTML snapshots th
 - `archive/site_v0.html`: earliest available version
 - `archive/site_v1.html`: intermediate revision
 - `archive/site_v2.html`: latest provided revision
-- `index.html`: current site, promoted from `site_v2.html`
+- `archive/site_v3.html`: live site as promoted from `site_v2.html`, before the hero visual-card fixes (footer read "Versão 3.1")
+- `index.html`: current site, now at v4, with the hero visual-card fixes applied (footer reads "Versão 4.0")
 
 ## v0 -> v1
 
@@ -67,6 +68,18 @@ This file reconstructs the website history from the standalone HTML snapshots th
 - Increased hero spacing and card emphasis.
 - Simplified some borders, shadows, and background treatments to make the top of the page feel more cohesive.
 - Kept the broader structure introduced in `v1`, focusing `v2` on polishing rather than reshaping the full page.
+
+## v3 -> v4
+
+### Hero visual card
+
+- Removed the bouncing compass icon (`animate-bounce` badge) that floated over the top-left corner of the hero visual card.
+- Changed the hero grid and visual card layout from vertically centered to stretched, so the visual card's top edge now aligns with the top of the headline ("Sua empresa decide...") and its bottom edge aligns with the bottom of the percentage stats row.
+- Content inside the visual card is now vertically centered within the taller card instead of being top-packed.
+
+### Footer
+
+- Bumped the displayed version label from "Versão 3.1" to "Versão 4.0".
 
 ## Import notes
 
