@@ -8,7 +8,7 @@ This file reconstructs the website history from the standalone HTML snapshots th
 - `archive/site_v1.html`: intermediate revision
 - `archive/site_v2.html`: latest provided revision
 - `archive/site_v3.html`: live site as promoted from `site_v2.html`, before the hero visual-card fixes (footer read "Versão 3.1")
-- `index.html`: current site, now at v4, with the hero visual-card fixes applied (footer reads "Versão 4.0")
+- `index.html`: current site, now at v5, with navigation, spacing, hero stats, contact layout, and services-journey updates applied (footer reads "Versão 5.0")
 
 ## v0 -> v1
 
@@ -80,6 +80,38 @@ This file reconstructs the website history from the standalone HTML snapshots th
 ### Footer
 
 - Bumped the displayed version label from "Versão 3.1" to "Versão 4.0".
+
+## v4 -> v5
+
+### Navigation
+
+- Renamed header nav labels (desktop and mobile) to: "Rotina sem dados", "Cultura de dados", "Quem somos", "Filosofia", "Nossos pilares", "Stack técnico", "Como trabalhamos".
+- Updated the pink eyebrow tag above each section heading to match its new nav label.
+
+### Layout and spacing
+
+- Halved the vertical padding on every section (`py-20` -> `py-10`) for a tighter overall page flow.
+- Removed the "Padrões de engenharia corporativa" callout box from the end of the Stack Técnico section.
+
+### Hero stats row
+
+- Widened the first stat card ("Em 91,9%") relative to the other two (`1.3fr` vs `1fr`) so its text wraps less and card heights stay balanced.
+- Added light pink borders and a subtle pink background tint to all three stat cards.
+- Wrapped the mini-quiz box and the stats grid in a single shared container so both share one width constraint, guaranteeing their right edges stay pixel-aligned.
+
+### Contato section
+
+- Swapped the left/right positions of the contact text ("Diagnóstico estratégico personalizado") and the action buttons (WhatsApp, e-mail, social links), so the text now sits on the left and the buttons on the right.
+
+### Como trabalhamos (Resumo dos nossos serviços)
+
+- Reduced the services journey from 8 steps to 5: Kickoff, Diagnóstico e Trabalho Técnico, Apresentação e Melhorias, Capacitação e Orientação, Adaptação e Suporte.
+- Added a decorative chevron/arrow-shaped step flow above the description cards on desktop, with a numbered-badge fallback on mobile.
+- Rewrote and tightened the description copy for each of the 5 steps.
+
+### Footer
+
+- Bumped the displayed version label from "Versão 4.0" to "Versão 5.0".
 
 ## Import notes
 
