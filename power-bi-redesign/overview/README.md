@@ -63,7 +63,12 @@ shipping the measure.
 3. **`Aux_Quantidades_Engenharia[_Rotinas_Respondidas_Geral]` measure name.**
    The trace shows the table/column pair; confirm the actual measure name
    that wraps it (a raw column reference cannot be used directly inside
-   `CONCATENATEX`/`FORMAT` the way a measure can).
+   `CONCATENATEX`/`FORMAT` the way a measure can). Despite the
+   "Aux"/"Engenharia" (engineering) naming, the trace associates this
+   column with the same routines-answered KPI as `_Measures[_Rotinas_Respondidas]`
+   — it is likely a helper/auxiliary table feeding that KPI (e.g. a
+   pre-aggregated or engineering-calculated variant), not an unrelated
+   metric. Confirm this relationship in the model before relying on it.
 
 ## How to wire this up in Power BI
 

@@ -81,15 +81,32 @@ VAR MaxBarras = 6 -- cap per chart card so the layout doesn't overflow
 -- count that needs to be divided by an "expected" measure.
 -- ---------------------------------------------------------------------
 VAR KpiPercentual =
-    FORMAT ( COALESCE ( [_Rotinas_Respondidas], 0 ), "0%" )
+    -- IFERROR guards against a possible division-by-zero if this measure
+    -- turns out to be a ratio (see placeholder note above); mirrors the
+    -- same guard pattern used by KpiDiarios below for consistency.
+    FORMAT ( COALESCE ( IFERROR ( [_Rotinas_Respondidas], BLANK () ), 0 ), "0%" )
 
 VAR KpiDiarios =
-    FORMAT ( COALESCE ( [Aux_Quantidades_Engenharia_Rotinas_Respondidas_Geral], 0 ), "#,##0" )
-    -- [PLACEHOLDER] rename to match the actual measure name for
-    -- Aux_Quantidades_Engenharia[_Rotinas_Respondidas_Geral] in your model.
+    -- [PLACEHOLDER] The trace confirms the table/column pair
+    -- Aux_Quantidades_Engenharia[_Rotinas_Respondidas_Geral] exists, but not
+    -- whether a wrapping measure already exists in the model, nor the
+    -- correct aggregation (SUM here is a placeholder default and assumes
+    -- the column is numeric). If a dedicated measure already wraps this
+    -- column, replace SUM ( Aux_Quantidades_Engenharia[_Rotinas_Respondidas_Geral] )
+    -- below with that measure reference instead (e.g. [Rotinas_Respondidas_Geral]).
+    -- IFERROR guards against the column turning out to be non-numeric
+    -- (e.g. text/ID), which would otherwise fail this whole measure.
+    FORMAT ( COALESCE ( IFERROR ( SUM ( Aux_Quantidades_Engenharia[_Rotinas_Respondidas_Geral] ), BLANK () ), 0 ), "#,##0" )
 
 -- ---------------------------------------------------------------------
 -- Chart card 1: Rotinas respondidas por Concessão
+--
+-- NOTE ON DUPLICATION: this TabelaX/HtmlX (TOPN + CONCATENATEX) pattern
+-- is intentionally repeated below for Cargo, Rotinas and Diarios instead
+-- of being factored into a shared helper, since DAX does not support
+-- user-defined reusable functions the way general-purpose languages do.
+-- If you change the bar-row markup or logic here, apply the same change
+-- to all four blocks (Concessão/Cargo/Rotinas/Diarios).
 -- ---------------------------------------------------------------------
 VAR TabelaConcessao =
     TOPN (
@@ -206,18 +223,77 @@ VAR TabelaTemporal =
         "@Valor", [_Rotinas_Respondidas]
     )
 
-VAR QtdPontos = COUNTROWS ( TabelaTemporal )
+VAR QtdPontos = COUNTROWS ( TabelaTemporal ) -- same row count as TabelaTemporalIndexada below; computed early since it's needed before that table exists
 VAR MaxValorTemporal = MAXX ( TabelaTemporal, [@Valor] )
 VAR MinValorTemporal = MINX ( TabelaTemporal, [@Valor] )
 
+-- [PLACEHOLDER] F_Diario_De_Bordo[DiaSemana] is text (weekday name), so it
+-- cannot be ranked chronologically by RANKX on its own value (that would
+-- sort alphabetically, e.g. "Domingo" before "Segunda"). Until a real
+-- calendar/date column is confirmed (see note above), this explicit
+-- SWITCH assigns a Sunday-first numeric order (adjust wording/order to
+-- match your model's actual weekday labels and desired week start).
+-- BEFORE USING: run `EVALUATE DISTINCT ( F_Diario_De_Bordo[DiaSemana] )`
+-- in DAX Studio / the Power BI query editor and copy the exact literal
+-- values (spelling, accents, casing, abbreviations) into the SWITCH below.
+-- Any label that doesn't match one of these literals silently falls into
+-- the `99` bucket and is pushed to the end of the axis without an error.
+VAR OrdemDiaSemana =
+    ADDCOLUMNS (
+        TabelaTemporal,
+        "@Ordem",
+            SWITCH (
+                TRUE (),
+                F_Diario_De_Bordo[DiaSemana] = "Domingo", 1,
+                F_Diario_De_Bordo[DiaSemana] = "Segunda-feira", 2,
+                F_Diario_De_Bordo[DiaSemana] = "Terça-feira", 3,
+                F_Diario_De_Bordo[DiaSemana] = "Quarta-feira", 4,
+                F_Diario_De_Bordo[DiaSemana] = "Quinta-feira", 5,
+                F_Diario_De_Bordo[DiaSemana] = "Sexta-feira", 6,
+                F_Diario_De_Bordo[DiaSemana] = "Sábado", 7,
+                99 -- unmapped label falls back to the end of the axis
+            )
+    )
+
+-- Diagnostic only (not rendered): count of weekday labels that did not
+-- match any literal above. If this is > 0 while testing, the SWITCH
+-- literals above do not match your model's actual DiaSemana values and
+-- must be corrected — do not ship silently with unmapped rows.
+VAR QtdDiaSemanaNaoMapeado =
+    COUNTROWS ( FILTER ( OrdemDiaSemana, [@Ordem] = 99 ) )
+
+-- Multiple unmapped labels would all share @Ordem = 99, which combined
+-- with DENSE ranking below would collapse them onto the same X position
+-- in the SVG polyline instead of surfacing the mapping problem visually.
+-- @OrdemDesempatada breaks such ties deterministically (alphabetically)
+-- so every row still gets a distinct, strictly increasing index.
+-- 1,000,000 below is a safety-margin divisor, not a meaningful business
+-- number: @Ordem buckets are integers 1-99, so adding a fraction smaller
+-- than 1/1,000,000th keeps ties ordered within their bucket without ever
+-- pushing a row into the next integer bucket, as long as there are fewer
+-- than ~1,000,000 rows sharing the same @Ordem value (true for any
+-- realistic weekday/period axis; revisit only if this table's grain
+-- changes drastically, e.g. from weekdays to individual dates).
+VAR OrdemDiaSemanaDesempatada =
+    ADDCOLUMNS (
+        OrdemDiaSemana,
+        "@OrdemDesempatada",
+            [@Ordem] + DIVIDE ( RANKX ( OrdemDiaSemana, F_Diario_De_Bordo[DiaSemana], , ASC, DENSE ), 1000000 )
+    )
+
 -- Builds an SVG <polyline> points list "x1,y1 x2,y2 ..." scaled to an
 -- 800x200 viewBox, spreading points evenly across the width.
+VAR TabelaTemporalIndexada =
+    ADDCOLUMNS (
+        OrdemDiaSemanaDesempatada,
+        "@Indice", RANKX ( OrdemDiaSemanaDesempatada, [@OrdemDesempatada], , ASC, DENSE ) - 1
+    )
+
 VAR PontosLinha =
     CONCATENATEX (
         ADDCOLUMNS (
-            TabelaTemporal,
-            "@Indice", RANKX ( TabelaTemporal, [DiaSemana], , ASC, DENSE ) - 1,
-            "@X", DIVIDE ( ( RANKX ( TabelaTemporal, [DiaSemana], , ASC, DENSE ) - 1 ) * 800, MAX ( QtdPontos - 1, 1 ) ),
+            TabelaTemporalIndexada,
+            "@X", DIVIDE ( [@Indice] * 800, MAX ( QtdPontos - 1, 1 ) ),
             "@Y", 190 - DIVIDE ( [@Valor] - MinValorTemporal, MAX ( MaxValorTemporal - MinValorTemporal, 0.0001 ) ) * 170
         ),
         FORMAT ( [@X], "0" ) & "," & FORMAT ( [@Y], "0" ),
@@ -234,10 +310,17 @@ VAR HtmlTemporal =
 -- Assemble page (mirrors overview/index.html structure/classes)
 -- ---------------------------------------------------------------------
 VAR Html =
+    -- Surfaces the weekday-mapping diagnostic (see QtdDiaSemanaNaoMapeado
+    -- above) as an HTML comment, visible via "View source" in the HTML 5
+    -- Content visual, without affecting the rendered layout.
+    "<!-- DiaSemana labels not matched by SWITCH: " & QtdDiaSemanaNaoMapeado & " -->" &
     "<html><head><style>" &
     -- Reuse the same CSS rules as overview/index.html so the rendered
     -- measure matches the static preview. Keep this block in sync with
-    -- the <style> section of index.html when either changes.
+    -- the <style> section of index.html when either changes: this
+    -- repository has no build/lint step to generate or diff the two, so
+    -- any manual style edit to one file MUST be mirrored in the other by
+    -- hand as part of the same change (checklist item, not automated).
     "* { box-sizing: border-box; } body { margin:0; font-family:'Segoe UI',Arial,sans-serif; background:#eef1f6; color:#1f2430; }" &
     ".app-header { background:#0e1b33; color:#f4f6fb; padding:14px 20px; } .app-header h1 { margin:0; font-size:18px; }" &
     ".kpi-card { background:#10203f; color:#f4f6fb; border-radius:14px; padding:18px 20px; margin:14px; }" &
