@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Diário de Bordo — Resumo Principal (preview)</title>
+<style>
+  /* Self-contained styles for the Power BI "HTML 5 Content" custom visual.
+     No JavaScript and no external/CDN resources are used, since the visual
+     only renders static HTML/CSS (and inline SVG) produced by a DAX measure. */
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #1f2430;
+    background: #eef1f6;
+  }
+
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  /* ---------- Header ---------- */
+
+  .app-header {
+    background: #0e1b33;
+    color: #f4f6fb;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .app-header .title-block h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+
+  .app-header .title-block p {
+    margin: 2px 0 0;
+    font-size: 11px;
+    color: #9aa7c7;
+  }
+
+  /* Compact page navigation — one Power BI report page per pill.
+     Add a pill here for every new page folder created under power-bi-redesign/. */
+  .page-nav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .page-nav .pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.08);
+    color: #b9c3dd;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .page-nav .pill.active {
+    background: #2f6fed;
+    color: #ffffff;
+    border-color: #2f6fed;
+  }
+
+  /* ---------- Canvas ---------- */
+
+  .canvas {
+    flex: 1;
+    background: #eef1f6;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .illustrative-banner {
+    font-size: 11px;
+    color: #7a4a00;
+    background: #fff3d6;
+    border: 1px solid #f0c96b;
+    border-radius: 6px;
+    padding: 6px 10px;
+  }
+
+  /* ---------- Native slicer placeholder ---------- */
+  /* This region does NOT contain functional controls. It only reserves
+     space and labels where native Power BI slicer visuals should be
+     placed on top of / beside this HTML visual in the report canvas. */
+
+  .slicer-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+    background: #ffffff;
+    border: 1px dashed #9aa7c7;
+    border-radius: 10px;
+  }
+
+  .slicer-bar .slicer-label {
+    width: 100%;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #5c6a8f;
+    margin-bottom: 2px;
+  }
+
+  .slicer-placeholder {
+    min-width: 140px;
+    flex: 1 1 140px;
+    border: 1px dashed #c3cbe0;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 11px;
+    color: #8791ab;
+    background: #f7f8fc;
+  }
+
+  .slicer-placeholder strong {
+    display: block;
+    font-size: 11px;
+    color: #454e68;
+    margin-bottom: 2px;
+  }
+
+  /* ---------- KPI card ---------- */
+
+  .kpi-card {
+    background: #10203f;
+    color: #f4f6fb;
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    align-items: center;
+  }
+
+  .kpi-main .kpi-value {
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .kpi-main .kpi-label {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #9aa7c7;
+  }
+
+  .kpi-subitems {
+    display: flex;
+    gap: 26px;
+    flex-wrap: wrap;
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
+    padding-left: 22px;
+  }
+
+  .kpi-subitem .value {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .kpi-subitem .label {
+    font-size: 11px;
+    color: #9aa7c7;
+    margin-top: 2px;
+  }
+
+  /* ---------- Chart grid ---------- */
+
+  .grid-two-col {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+    gap: 14px;
+  }
+
+  .chart-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 2px rgba(20, 30, 60, 0.06);
+  }
+
+  .chart-card h2 {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2a314a;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 11px;
+  }
+
+  .bar-row .bar-name {
+    width: 92px;
+    flex: 0 0 92px;
+    color: #4b5474;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bar-row .bar-track {
+    flex: 1;
+    background: #eef1f6;
+    border-radius: 6px;
+    height: 12px;
+    overflow: hidden;
+  }
+
+  .bar-row .bar-fill {
+    height: 100%;
+    border-radius: 6px;
+  }
+
+  .bar-row .bar-value {
+    width: 34px;
+    flex: 0 0 34px;
+    color: #2a314a;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .bar-fill.c-blue   { background: #2f6fed; }
+  .bar-fill.c-teal   { background: #12b6ac; }
+  .bar-fill.c-orange { background: #f2994a; }
+  .bar-fill.c-purple { background: #8c6fed; }
+  .bar-fill.c-pink   { background: #ef5ea0; }
+  .bar-fill.c-green  { background: #4caf50; }
+
+  /* ---------- Wide temporal chart ---------- */
+
+  .wide-chart-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 2px rgba(20, 30, 60, 0.06);
+  }
+
+  .wide-chart-card h2 {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2a314a;
+  }
+
+  .wide-chart-card .subtitle {
+    margin: 0 0 10px;
+    font-size: 11px;
+    color: #8791ab;
+  }
+
+  .wide-chart-card svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .axis-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #8791ab;
+    padding: 4px 4px 0;
+  }
+
+  @media (max-width: 720px) {
+    .grid-two-col { grid-template-columns: 1fr; }
+    .kpi-subitems { border-left: none; padding-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ============ Header ============ -->
+  <header class="app-header">
+    <div class="title-block">
+      <h1>Diário de Bordo — Segurança</h1>
+      <p>Relatório de rotinas e diários de segurança</p>
+    </div>
+    <nav class="page-nav" aria-label="Navegação de páginas do relatório">
+      <span class="pill active">Resumo Principal</span>
+      <span class="pill">Detalhamento (em breve)</span>
+      <span class="pill">Tendências (em breve)</span>
+    </nav>
+  </header>
+
+  <!-- ============ Canvas ============ -->
+  <main class="canvas">
+
+    <div class="illustrative-banner">
+      Dados ilustrativos para fins de layout. Os valores exibidos nesta página NÃO refletem resultados reais do modelo — veja measure.dax e README.md.
+    </div>
+
+    <!-- Native Power BI slicers live in the report canvas, not in this HTML.
+         This box only reserves and labels the space for them. -->
+    <section class="slicer-bar" aria-label="Área reservada para slicers nativos do Power BI">
+      <div class="slicer-label">Slicers nativos do Power BI (inserir como visuais separados, não HTML)</div>
+      <div class="slicer-placeholder"><strong>Concessão</strong>D_Concessao[Concessão]</div>
+      <div class="slicer-placeholder"><strong>Cargo</strong>D_Cargo[cargo]</div>
+      <div class="slicer-placeholder"><strong>Período</strong>D_Periodos[Período]</div>
+      <div class="slicer-placeholder"><strong>Ano</strong>F_Diario_De_Bordo[Ano]</div>
+    </section>
+
+    <!-- KPI summary card -->
+    <section class="kpi-card">
+      <div class="kpi-main">
+        <div class="kpi-value">87%</div>
+        <div class="kpi-label">Rotinas respondidas (ilustrativo) — placeholder para _Measures[_Rotinas_Respondidas]</div>
+      </div>
+      <div class="kpi-subitems">
+        <div class="kpi-subitem">
+          <div class="value">1.240</div>
+          <div class="label">Diários registrados (ilustrativo)</div>
+        </div>
+        <div class="kpi-subitem">
+          <div class="value">312</div>
+          <div class="label">Rotinas pendentes (ilustrativo)</div>
+        </div>
+        <div class="kpi-subitem">
+          <div class="value">96</div>
+          <div class="label">Concessões ativas (ilustrativo)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Two-column grid of chart cards -->
+    <section class="grid-two-col">
+
+      <div class="chart-card">
+        <h2>Rotinas respondidas por Concessão (ilustrativo)</h2>
+        <div class="bar-row"><span class="bar-name">Concessão A</span><span class="bar-track"><span class="bar-fill c-blue" style="width:88%"></span></span><span class="bar-value">88%</span></div>
+        <div class="bar-row"><span class="bar-name">Concessão B</span><span class="bar-track"><span class="bar-fill c-blue" style="width:74%"></span></span><span class="bar-value">74%</span></div>
+        <div class="bar-row"><span class="bar-name">Concessão C</span><span class="bar-track"><span class="bar-fill c-blue" style="width:61%"></span></span><span class="bar-value">61%</span></div>
+        <div class="bar-row"><span class="bar-name">Concessão D</span><span class="bar-track"><span class="bar-fill c-blue" style="width:45%"></span></span><span class="bar-value">45%</span></div>
+      </div>
+
+      <div class="chart-card">
+        <h2>Rotinas respondidas por Cargo (ilustrativo)</h2>
+        <div class="bar-row"><span class="bar-name">Motorista</span><span class="bar-track"><span class="bar-fill c-teal" style="width:92%"></span></span><span class="bar-value">92%</span></div>
+        <div class="bar-row"><span class="bar-name">Supervisor</span><span class="bar-track"><span class="bar-fill c-teal" style="width:79%"></span></span><span class="bar-value">79%</span></div>
+        <div class="bar-row"><span class="bar-name">Mecânico</span><span class="bar-track"><span class="bar-fill c-teal" style="width:66%"></span></span><span class="bar-value">66%</span></div>
+        <div class="bar-row"><span class="bar-name">Auxiliar</span><span class="bar-track"><span class="bar-fill c-teal" style="width:52%"></span></span><span class="bar-value">52%</span></div>
+      </div>
+
+      <div class="chart-card">
+        <h2>Distribuição por tipo de Rotina (ilustrativo)</h2>
+        <div class="bar-row"><span class="bar-name">Pré-viagem</span><span class="bar-track"><span class="bar-fill c-orange" style="width:95%"></span></span><span class="bar-value">95%</span></div>
+        <div class="bar-row"><span class="bar-name">Pós-viagem</span><span class="bar-track"><span class="bar-fill c-orange" style="width:81%"></span></span><span class="bar-value">81%</span></div>
+        <div class="bar-row"><span class="bar-name">Intermediária</span><span class="bar-track"><span class="bar-fill c-orange" style="width:58%"></span></span><span class="bar-value">58%</span></div>
+        <div class="bar-row"><span class="bar-name">Extraordinária</span><span class="bar-track"><span class="bar-fill c-orange" style="width:33%"></span></span><span class="bar-value">33%</span></div>
+      </div>
+
+      <div class="chart-card">
+        <h2>Distribuição por tipo de Diário (ilustrativo)</h2>
+        <div class="bar-row"><span class="bar-name">Diário A</span><span class="bar-track"><span class="bar-fill c-purple" style="width:85%"></span></span><span class="bar-value">85%</span></div>
+        <div class="bar-row"><span class="bar-name">Diário B</span><span class="bar-track"><span class="bar-fill c-purple" style="width:69%"></span></span><span class="bar-value">69%</span></div>
+        <div class="bar-row"><span class="bar-name">Diário C</span><span class="bar-track"><span class="bar-fill c-purple" style="width:47%"></span></span><span class="bar-value">47%</span></div>
+        <div class="bar-row"><span class="bar-name">Diário D</span><span class="bar-track"><span class="bar-fill c-purple" style="width:29%"></span></span><span class="bar-value">29%</span></div>
+      </div>
+
+    </section>
+
+    <!-- Wide temporal chart -->
+    <section class="wide-chart-card">
+      <h2>Evolução temporal de rotinas respondidas (ilustrativo)</h2>
+      <p class="subtitle">Eixo horizontal placeholder — substituir por coluna real de mês/data do modelo (não identificada no trace). Dados abaixo são apenas ilustrativos.</p>
+      <svg viewBox="0 0 800 200" preserveAspectRatio="none" role="img" aria-label="Gráfico de área ilustrativo da evolução temporal">
+        <defs>
+          <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#2f6fed" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="#2f6fed" stop-opacity="0.02" />
+          </linearGradient>
+        </defs>
+        <polyline points="0,200 0,140 100,120 200,150 300,90 400,110 500,70 600,95 700,60 800,80 800,200" fill="url(#areaGradient)" stroke="none" />
+        <polyline points="0,140 100,120 200,150 300,90 400,110 500,70 600,95 700,60 800,80" fill="none" stroke="#2f6fed" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="0" cy="140" r="3.5" fill="#2f6fed" />
+        <circle cx="100" cy="120" r="3.5" fill="#2f6fed" />
+        <circle cx="200" cy="150" r="3.5" fill="#2f6fed" />
+        <circle cx="300" cy="90" r="3.5" fill="#2f6fed" />
+        <circle cx="400" cy="110" r="3.5" fill="#2f6fed" />
+        <circle cx="500" cy="70" r="3.5" fill="#2f6fed" />
+        <circle cx="600" cy="95" r="3.5" fill="#2f6fed" />
+        <circle cx="700" cy="60" r="3.5" fill="#2f6fed" />
+        <circle cx="800" cy="80" r="3.5" fill="#2f6fed" />
+      </svg>
+      <div class="axis-labels">
+        <span>Período 1</span>
+        <span>Período 2</span>
+        <span>Período 3</span>
+        <span>Período 4</span>
+        <span>Período 5</span>
+        <span>Período 6</span>
+        <span>Período 7</span>
+        <span>Período 8</span>
+        <span>Período 9</span>
+      </div>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

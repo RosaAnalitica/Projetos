@@ -2,10 +2,10 @@
 
 Workspace for the multi-page Power BI dashboard redesign, based on the supplied Safety Daily / Diário de Bordo reference.
 
-## Planned pages
+## Pages
 
-- `overview/` — consolidated overview page
-- Add one folder per additional report page as the redesign grows.
+- `overview/` — "Resumo Principal" page: `index.html` (static preview), `measure.dax` (copyable DAX template), and a `README.md` with setup notes. **Implemented.**
+- Add one folder per additional report page as the redesign grows, following the same `index.html` / `measure.dax` / `README.md` structure.
 
 ## Implementation notes
 

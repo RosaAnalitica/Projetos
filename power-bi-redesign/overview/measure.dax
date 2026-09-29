@@ -1,0 +1,352 @@
+/*
+================================================================================
+ Resumo_Principal_HTML — DAX measure template
+================================================================================
+
+Purpose
+-------
+Renders the "Resumo Principal" (overview) page of the Diário de Bordo /
+Safety Daily report as a single block of HTML/CSS + inline SVG, to be bound
+to a Power BI "HTML 5 Content" custom visual.
+
+This is a TEMPLATE, not a finished, production measure:
+  - Table/column/measure names come from the supplied Performance Analyzer
+    trace and are marked [TRACE] below. They are confirmed to exist in the
+    model, but the trace does NOT reveal exact business semantics, so some
+    usages below are best-effort and MUST be reviewed.
+  - Anything marked [PLACEHOLDER] is an assumption you must confirm or
+    replace with the correct field/measure from your model before use
+    (e.g. the date/month label column for the temporal chart, and the exact
+    meaning of the KPI percentage).
+  - No numeric result in this file is a real business value. Do not treat
+    any number produced by testing this file as an actual reported result
+    until it has been validated against your model.
+
+Model assumptions
+------------------
+  Dimensions (from trace):
+    D_Concessao[Concessão]                         [TRACE]
+    D_Cargo[cargo]                                 [TRACE]
+    D_Rotinas[Rotinas]                              [TRACE]
+    D_Diarios[Diarios]                              [TRACE]
+    D_Periodos[Período]                             [TRACE]
+  Fact table (from trace):
+    F_Diario_De_Bordo[DiaSemana]                    [TRACE]
+    F_Diario_De_Bordo[Ano]                          [TRACE]
+  Measures (from trace):
+    _Measures[_Rotinas_Respondidas]                 [TRACE]
+    Aux_Quantidades_Engenharia[_Rotinas_Respondidas_Geral] [TRACE]
+  Not identified in the trace — replace before use:
+    <Date/Month label column for the temporal chart, e.g. D_Calendario[MesAno]> [PLACEHOLDER]
+    <Confirmation of what "_Rotinas_Respondidas" as a % represents (answered vs. expected)> [PLACEHOLDER]
+
+  All dimension tables above are assumed to be on the "many" side of active
+  relationships to F_Diario_De_Bordo (directly or through a bridge table),
+  so that native slicers built on D_Concessao, D_Cargo, D_Rotinas, D_Diarios
+  and D_Periodos filter F_Diario_De_Bordo and therefore this measure through
+  standard Power BI filter-context propagation. Confirm relationship
+  direction/active status in Model view before shipping.
+
+How native slicers reach this measure
+--------------------------------------
+This measure must NOT be filtered manually inside the DAX (no hard-coded
+member lists). Instead:
+  1. Add native Power BI slicer visuals to the report canvas (not to the
+     HTML visual) bound to D_Concessao[Concessão], D_Cargo[cargo],
+     D_Periodos[Período], F_Diario_De_Bordo[Ano], etc.
+  2. Leave the slicers' interactions with the HTML visual set to "Filter"
+     (the default). Power BI will apply the slicer selections to the
+     query's filter context automatically.
+  3. Because this measure uses CALCULATE/CALCULATETABLE only to build the
+     small per-category tables used to render bars (see VAR sections below),
+     the ambient filter context from the slicers still applies underneath,
+     so selections propagate correctly.
+
+Output contract
+---------------
+Returns a single scalar string of HTML understood by the HTML 5 Content
+custom visual: no <script> tags, no external CSS/JS/font/CDN references,
+inline <style> only, and inline SVG for the temporal chart. This mirrors
+overview/index.html so the DAX output can be visually compared to the
+static preview.
+================================================================================
+*/
+
+Resumo_Principal_HTML =
+VAR MaxBarras = 6 -- cap per chart card so the layout doesn't overflow
+
+-- ---------------------------------------------------------------------
+-- KPI card value
+-- [PLACEHOLDER] Confirm _Rotinas_Respondidas is already a % (0..1) or a
+-- count that needs to be divided by an "expected" measure.
+-- ---------------------------------------------------------------------
+VAR KpiPercentual =
+    -- IFERROR guards against a possible division-by-zero if this measure
+    -- turns out to be a ratio (see placeholder note above); mirrors the
+    -- same guard pattern used by KpiDiarios below for consistency.
+    FORMAT ( COALESCE ( IFERROR ( [_Rotinas_Respondidas], BLANK () ), 0 ), "0%" )
+
+VAR KpiDiarios =
+    -- [PLACEHOLDER] The trace confirms the table/column pair
+    -- Aux_Quantidades_Engenharia[_Rotinas_Respondidas_Geral] exists, but not
+    -- whether a wrapping measure already exists in the model, nor the
+    -- correct aggregation (SUM here is a placeholder default and assumes
+    -- the column is numeric). If a dedicated measure already wraps this
+    -- column, replace SUM ( Aux_Quantidades_Engenharia[_Rotinas_Respondidas_Geral] )
+    -- below with that measure reference instead (e.g. [Rotinas_Respondidas_Geral]).
+    -- IFERROR guards against the column turning out to be non-numeric
+    -- (e.g. text/ID), which would otherwise fail this whole measure.
+    FORMAT ( COALESCE ( IFERROR ( SUM ( Aux_Quantidades_Engenharia[_Rotinas_Respondidas_Geral] ), BLANK () ), 0 ), "#,##0" )
+
+-- ---------------------------------------------------------------------
+-- Chart card 1: Rotinas respondidas por Concessão
+--
+-- NOTE ON DUPLICATION: this TabelaX/HtmlX (TOPN + CONCATENATEX) pattern
+-- is intentionally repeated below for Cargo, Rotinas and Diarios instead
+-- of being factored into a shared helper, since DAX does not support
+-- user-defined reusable functions the way general-purpose languages do.
+-- If you change the bar-row markup or logic here, apply the same change
+-- to all four blocks (Concessão/Cargo/Rotinas/Diarios).
+-- ---------------------------------------------------------------------
+VAR TabelaConcessao =
+    TOPN (
+        MaxBarras,
+        ADDCOLUMNS (
+            VALUES ( D_Concessao[Concessão] ),
+            "@Valor", [_Rotinas_Respondidas]
+        ),
+        [@Valor], DESC
+    )
+
+VAR HtmlConcessao =
+    CONCATENATEX (
+        TabelaConcessao,
+        "<div class='bar-row'>"
+            & "<span class='bar-name'>" & D_Concessao[Concessão] & "</span>"
+            & "<span class='bar-track'><span class='bar-fill c-blue' style='width:"
+            & FORMAT ( [@Valor] * 100, "0" ) & "%'></span></span>"
+            & "<span class='bar-value'>" & FORMAT ( [@Valor], "0%" ) & "</span>"
+            & "</div>",
+        "",
+        [@Valor], DESC
+    )
+
+-- ---------------------------------------------------------------------
+-- Chart card 2: Rotinas respondidas por Cargo
+-- ---------------------------------------------------------------------
+VAR TabelaCargo =
+    TOPN (
+        MaxBarras,
+        ADDCOLUMNS (
+            VALUES ( D_Cargo[cargo] ),
+            "@Valor", [_Rotinas_Respondidas]
+        ),
+        [@Valor], DESC
+    )
+
+VAR HtmlCargo =
+    CONCATENATEX (
+        TabelaCargo,
+        "<div class='bar-row'>"
+            & "<span class='bar-name'>" & D_Cargo[cargo] & "</span>"
+            & "<span class='bar-track'><span class='bar-fill c-teal' style='width:"
+            & FORMAT ( [@Valor] * 100, "0" ) & "%'></span></span>"
+            & "<span class='bar-value'>" & FORMAT ( [@Valor], "0%" ) & "</span>"
+            & "</div>",
+        "",
+        [@Valor], DESC
+    )
+
+-- ---------------------------------------------------------------------
+-- Chart card 3: Distribuição por tipo de Rotina
+-- ---------------------------------------------------------------------
+VAR TabelaRotinas =
+    TOPN (
+        MaxBarras,
+        ADDCOLUMNS (
+            VALUES ( D_Rotinas[Rotinas] ),
+            "@Valor", [_Rotinas_Respondidas]
+        ),
+        [@Valor], DESC
+    )
+
+VAR HtmlRotinas =
+    CONCATENATEX (
+        TabelaRotinas,
+        "<div class='bar-row'>"
+            & "<span class='bar-name'>" & D_Rotinas[Rotinas] & "</span>"
+            & "<span class='bar-track'><span class='bar-fill c-orange' style='width:"
+            & FORMAT ( [@Valor] * 100, "0" ) & "%'></span></span>"
+            & "<span class='bar-value'>" & FORMAT ( [@Valor], "0%" ) & "</span>"
+            & "</div>",
+        "",
+        [@Valor], DESC
+    )
+
+-- ---------------------------------------------------------------------
+-- Chart card 4: Distribuição por tipo de Diário
+-- ---------------------------------------------------------------------
+VAR TabelaDiarios =
+    TOPN (
+        MaxBarras,
+        ADDCOLUMNS (
+            VALUES ( D_Diarios[Diarios] ),
+            "@Valor", [_Rotinas_Respondidas]
+        ),
+        [@Valor], DESC
+    )
+
+VAR HtmlDiarios =
+    CONCATENATEX (
+        TabelaDiarios,
+        "<div class='bar-row'>"
+            & "<span class='bar-name'>" & D_Diarios[Diarios] & "</span>"
+            & "<span class='bar-track'><span class='bar-fill c-purple' style='width:"
+            & FORMAT ( [@Valor] * 100, "0" ) & "%'></span></span>"
+            & "<span class='bar-value'>" & FORMAT ( [@Valor], "0%" ) & "</span>"
+            & "</div>",
+        "",
+        [@Valor], DESC
+    )
+
+-- ---------------------------------------------------------------------
+-- Wide temporal chart (bottom)
+-- [PLACEHOLDER] Replace <D_Calendario[MesAno]> below with the real
+-- date/month label column. The trace only exposes F_Diario_De_Bordo[Ano]
+-- and F_Diario_De_Bordo[DiaSemana]; neither is a clean chronological axis
+-- for a month-over-month trend, so a proper calendar table column (or a
+-- sorted DiaSemana with an explicit weekday sort order) must be confirmed.
+-- ---------------------------------------------------------------------
+VAR TabelaTemporal =
+    ADDCOLUMNS (
+        VALUES ( F_Diario_De_Bordo[DiaSemana] ), -- [PLACEHOLDER] swap for real period axis
+        "@Valor", [_Rotinas_Respondidas]
+    )
+
+VAR QtdPontos = COUNTROWS ( TabelaTemporal ) -- same row count as TabelaTemporalIndexada below; computed early since it's needed before that table exists
+VAR MaxValorTemporal = MAXX ( TabelaTemporal, [@Valor] )
+VAR MinValorTemporal = MINX ( TabelaTemporal, [@Valor] )
+
+-- [PLACEHOLDER] F_Diario_De_Bordo[DiaSemana] is text (weekday name), so it
+-- cannot be ranked chronologically by RANKX on its own value (that would
+-- sort alphabetically, e.g. "Domingo" before "Segunda"). Until a real
+-- calendar/date column is confirmed (see note above), this explicit
+-- SWITCH assigns a Sunday-first numeric order (adjust wording/order to
+-- match your model's actual weekday labels and desired week start).
+-- BEFORE USING: run `EVALUATE DISTINCT ( F_Diario_De_Bordo[DiaSemana] )`
+-- in DAX Studio / the Power BI query editor and copy the exact literal
+-- values (spelling, accents, casing, abbreviations) into the SWITCH below.
+-- Any label that doesn't match one of these literals silently falls into
+-- the `99` bucket and is pushed to the end of the axis without an error.
+VAR OrdemDiaSemana =
+    ADDCOLUMNS (
+        TabelaTemporal,
+        "@Ordem",
+            SWITCH (
+                TRUE (),
+                F_Diario_De_Bordo[DiaSemana] = "Domingo", 1,
+                F_Diario_De_Bordo[DiaSemana] = "Segunda-feira", 2,
+                F_Diario_De_Bordo[DiaSemana] = "Terça-feira", 3,
+                F_Diario_De_Bordo[DiaSemana] = "Quarta-feira", 4,
+                F_Diario_De_Bordo[DiaSemana] = "Quinta-feira", 5,
+                F_Diario_De_Bordo[DiaSemana] = "Sexta-feira", 6,
+                F_Diario_De_Bordo[DiaSemana] = "Sábado", 7,
+                99 -- unmapped label falls back to the end of the axis
+            )
+    )
+
+-- Diagnostic only (not rendered): count of weekday labels that did not
+-- match any literal above. If this is > 0 while testing, the SWITCH
+-- literals above do not match your model's actual DiaSemana values and
+-- must be corrected — do not ship silently with unmapped rows.
+VAR QtdDiaSemanaNaoMapeado =
+    COUNTROWS ( FILTER ( OrdemDiaSemana, [@Ordem] = 99 ) )
+
+-- Multiple unmapped labels would all share @Ordem = 99, which combined
+-- with DENSE ranking below would collapse them onto the same X position
+-- in the SVG polyline instead of surfacing the mapping problem visually.
+-- @OrdemDesempatada breaks such ties deterministically (alphabetically)
+-- so every row still gets a distinct, strictly increasing index.
+-- 1,000,000 below is a safety-margin divisor, not a meaningful business
+-- number: @Ordem buckets are integers 1-99, so adding a fraction smaller
+-- than 1/1,000,000th keeps ties ordered within their bucket without ever
+-- pushing a row into the next integer bucket, as long as there are fewer
+-- than ~1,000,000 rows sharing the same @Ordem value (true for any
+-- realistic weekday/period axis; revisit only if this table's grain
+-- changes drastically, e.g. from weekdays to individual dates).
+VAR OrdemDiaSemanaDesempatada =
+    ADDCOLUMNS (
+        OrdemDiaSemana,
+        "@OrdemDesempatada",
+            [@Ordem] + DIVIDE ( RANKX ( OrdemDiaSemana, F_Diario_De_Bordo[DiaSemana], , ASC, DENSE ), 1000000 )
+    )
+
+-- Builds an SVG <polyline> points list "x1,y1 x2,y2 ..." scaled to an
+-- 800x200 viewBox, spreading points evenly across the width.
+VAR TabelaTemporalIndexada =
+    ADDCOLUMNS (
+        OrdemDiaSemanaDesempatada,
+        "@Indice", RANKX ( OrdemDiaSemanaDesempatada, [@OrdemDesempatada], , ASC, DENSE ) - 1
+    )
+
+VAR PontosLinha =
+    CONCATENATEX (
+        ADDCOLUMNS (
+            TabelaTemporalIndexada,
+            "@X", DIVIDE ( [@Indice] * 800, MAX ( QtdPontos - 1, 1 ) ),
+            "@Y", 190 - DIVIDE ( [@Valor] - MinValorTemporal, MAX ( MaxValorTemporal - MinValorTemporal, 0.0001 ) ) * 170
+        ),
+        FORMAT ( [@X], "0" ) & "," & FORMAT ( [@Y], "0" ),
+        " ",
+        [@Indice], ASC
+    )
+
+VAR HtmlTemporal =
+    "<svg viewBox='0 0 800 200' preserveAspectRatio='none' role='img'>"
+        & "<polyline points='" & PontosLinha & "' fill='none' stroke='#2f6fed' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' />"
+        & "</svg>"
+
+-- ---------------------------------------------------------------------
+-- Assemble page (mirrors overview/index.html structure/classes)
+-- ---------------------------------------------------------------------
+VAR Html =
+    -- Surfaces the weekday-mapping diagnostic (see QtdDiaSemanaNaoMapeado
+    -- above) as an HTML comment, visible via "View source" in the HTML 5
+    -- Content visual, without affecting the rendered layout.
+    "<!-- DiaSemana labels not matched by SWITCH: " & QtdDiaSemanaNaoMapeado & " -->" &
+    "<html><head><style>" &
+    -- Reuse the same CSS rules as overview/index.html so the rendered
+    -- measure matches the static preview. Keep this block in sync with
+    -- the <style> section of index.html when either changes: this
+    -- repository has no build/lint step to generate or diff the two, so
+    -- any manual style edit to one file MUST be mirrored in the other by
+    -- hand as part of the same change (checklist item, not automated).
+    "* { box-sizing: border-box; } body { margin:0; font-family:'Segoe UI',Arial,sans-serif; background:#eef1f6; color:#1f2430; }" &
+    ".app-header { background:#0e1b33; color:#f4f6fb; padding:14px 20px; } .app-header h1 { margin:0; font-size:18px; }" &
+    ".kpi-card { background:#10203f; color:#f4f6fb; border-radius:14px; padding:18px 20px; margin:14px; }" &
+    ".kpi-value { font-size:34px; font-weight:700; }" &
+    ".grid-two-col { display:grid; grid-template-columns:repeat(2, minmax(240px,1fr)); gap:14px; margin:0 14px 14px; }" &
+    ".chart-card { background:#fff; border-radius:14px; padding:14px 16px; }" &
+    ".chart-card h2 { margin:0 0 10px; font-size:13px; color:#2a314a; }" &
+    ".bar-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:11px; }" &
+    ".bar-name { width:92px; flex:0 0 92px; text-align:right; color:#4b5474; }" &
+    ".bar-track { flex:1; background:#eef1f6; border-radius:6px; height:12px; overflow:hidden; }" &
+    ".bar-fill { height:100%; border-radius:6px; display:block; }" &
+    ".bar-value { width:34px; flex:0 0 34px; font-weight:700; }" &
+    ".c-blue{background:#2f6fed;} .c-teal{background:#12b6ac;} .c-orange{background:#f2994a;} .c-purple{background:#8c6fed;}" &
+    ".wide-chart-card { background:#fff; border-radius:14px; padding:16px 18px; margin:0 14px 14px; }" &
+    "</style></head><body>" &
+    "<div class='app-header'><h1>Diário de Bordo — Segurança</h1></div>" &
+    "<div class='kpi-card'><div class='kpi-value'>" & KpiPercentual & "</div>"
+        & "<div>Rotinas respondidas — _Measures[_Rotinas_Respondidas] · Diários (Geral): " & KpiDiarios & "</div></div>" &
+    "<div class='grid-two-col'>" &
+        "<div class='chart-card'><h2>Rotinas respondidas por Concessão</h2>" & HtmlConcessao & "</div>" &
+        "<div class='chart-card'><h2>Rotinas respondidas por Cargo</h2>" & HtmlCargo & "</div>" &
+        "<div class='chart-card'><h2>Distribuição por tipo de Rotina</h2>" & HtmlRotinas & "</div>" &
+        "<div class='chart-card'><h2>Distribuição por tipo de Diário</h2>" & HtmlDiarios & "</div>" &
+    "</div>" &
+    "<div class='wide-chart-card'><h2>Evolução temporal (eixo placeholder — ver notas)</h2>" & HtmlTemporal & "</div>" &
+    "</body></html>"
+
+RETURN
+    Html
