@@ -1,0 +1,269 @@
+/*
+================================================================================
+ Resumo_Principal_HTML — DAX measure template
+================================================================================
+
+Purpose
+-------
+Renders the "Resumo Principal" (overview) page of the Diário de Bordo /
+Safety Daily report as a single block of HTML/CSS + inline SVG, to be bound
+to a Power BI "HTML 5 Content" custom visual.
+
+This is a TEMPLATE, not a finished, production measure:
+  - Table/column/measure names come from the supplied Performance Analyzer
+    trace and are marked [TRACE] below. They are confirmed to exist in the
+    model, but the trace does NOT reveal exact business semantics, so some
+    usages below are best-effort and MUST be reviewed.
+  - Anything marked [PLACEHOLDER] is an assumption you must confirm or
+    replace with the correct field/measure from your model before use
+    (e.g. the date/month label column for the temporal chart, and the exact
+    meaning of the KPI percentage).
+  - No numeric result in this file is a real business value. Do not treat
+    any number produced by testing this file as an actual reported result
+    until it has been validated against your model.
+
+Model assumptions
+------------------
+  Dimensions (from trace):
+    D_Concessao[Concessão]                         [TRACE]
+    D_Cargo[cargo]                                 [TRACE]
+    D_Rotinas[Rotinas]                              [TRACE]
+    D_Diarios[Diarios]                              [TRACE]
+    D_Periodos[Período]                             [TRACE]
+  Fact table (from trace):
+    F_Diario_De_Bordo[DiaSemana]                    [TRACE]
+    F_Diario_De_Bordo[Ano]                          [TRACE]
+  Measures (from trace):
+    _Measures[_Rotinas_Respondidas]                 [TRACE]
+    Aux_Quantidades_Engenharia[_Rotinas_Respondidas_Geral] [TRACE]
+  Not identified in the trace — replace before use:
+    <Date/Month label column for the temporal chart, e.g. D_Calendario[MesAno]> [PLACEHOLDER]
+    <Confirmation of what "_Rotinas_Respondidas" as a % represents (answered vs. expected)> [PLACEHOLDER]
+
+  All dimension tables above are assumed to be on the "many" side of active
+  relationships to F_Diario_De_Bordo (directly or through a bridge table),
+  so that native slicers built on D_Concessao, D_Cargo, D_Rotinas, D_Diarios
+  and D_Periodos filter F_Diario_De_Bordo and therefore this measure through
+  standard Power BI filter-context propagation. Confirm relationship
+  direction/active status in Model view before shipping.
+
+How native slicers reach this measure
+--------------------------------------
+This measure must NOT be filtered manually inside the DAX (no hard-coded
+member lists). Instead:
+  1. Add native Power BI slicer visuals to the report canvas (not to the
+     HTML visual) bound to D_Concessao[Concessão], D_Cargo[cargo],
+     D_Periodos[Período], F_Diario_De_Bordo[Ano], etc.
+  2. Leave the slicers' interactions with the HTML visual set to "Filter"
+     (the default). Power BI will apply the slicer selections to the
+     query's filter context automatically.
+  3. Because this measure uses CALCULATE/CALCULATETABLE only to build the
+     small per-category tables used to render bars (see VAR sections below),
+     the ambient filter context from the slicers still applies underneath,
+     so selections propagate correctly.
+
+Output contract
+---------------
+Returns a single scalar string of HTML understood by the HTML 5 Content
+custom visual: no <script> tags, no external CSS/JS/font/CDN references,
+inline <style> only, and inline SVG for the temporal chart. This mirrors
+overview/index.html so the DAX output can be visually compared to the
+static preview.
+================================================================================
+*/
+
+Resumo_Principal_HTML =
+VAR MaxBarras = 6 -- cap per chart card so the layout doesn't overflow
+
+-- ---------------------------------------------------------------------
+-- KPI card value
+-- [PLACEHOLDER] Confirm _Rotinas_Respondidas is already a % (0..1) or a
+-- count that needs to be divided by an "expected" measure.
+-- ---------------------------------------------------------------------
+VAR KpiPercentual =
+    FORMAT ( COALESCE ( [_Rotinas_Respondidas], 0 ), "0%" )
+
+VAR KpiDiarios =
+    FORMAT ( COALESCE ( [Aux_Quantidades_Engenharia_Rotinas_Respondidas_Geral], 0 ), "#,##0" )
+    -- [PLACEHOLDER] rename to match the actual measure name for
+    -- Aux_Quantidades_Engenharia[_Rotinas_Respondidas_Geral] in your model.
+
+-- ---------------------------------------------------------------------
+-- Chart card 1: Rotinas respondidas por Concessão
+-- ---------------------------------------------------------------------
+VAR TabelaConcessao =
+    TOPN (
+        MaxBarras,
+        ADDCOLUMNS (
+            VALUES ( D_Concessao[Concessão] ),
+            "@Valor", [_Rotinas_Respondidas]
+        ),
+        [@Valor], DESC
+    )
+
+VAR HtmlConcessao =
+    CONCATENATEX (
+        TabelaConcessao,
+        "<div class='bar-row'>"
+            & "<span class='bar-name'>" & D_Concessao[Concessão] & "</span>"
+            & "<span class='bar-track'><span class='bar-fill c-blue' style='width:"
+            & FORMAT ( [@Valor] * 100, "0" ) & "%'></span></span>"
+            & "<span class='bar-value'>" & FORMAT ( [@Valor], "0%" ) & "</span>"
+            & "</div>",
+        "",
+        [@Valor], DESC
+    )
+
+-- ---------------------------------------------------------------------
+-- Chart card 2: Rotinas respondidas por Cargo
+-- ---------------------------------------------------------------------
+VAR TabelaCargo =
+    TOPN (
+        MaxBarras,
+        ADDCOLUMNS (
+            VALUES ( D_Cargo[cargo] ),
+            "@Valor", [_Rotinas_Respondidas]
+        ),
+        [@Valor], DESC
+    )
+
+VAR HtmlCargo =
+    CONCATENATEX (
+        TabelaCargo,
+        "<div class='bar-row'>"
+            & "<span class='bar-name'>" & D_Cargo[cargo] & "</span>"
+            & "<span class='bar-track'><span class='bar-fill c-teal' style='width:"
+            & FORMAT ( [@Valor] * 100, "0" ) & "%'></span></span>"
+            & "<span class='bar-value'>" & FORMAT ( [@Valor], "0%" ) & "</span>"
+            & "</div>",
+        "",
+        [@Valor], DESC
+    )
+
+-- ---------------------------------------------------------------------
+-- Chart card 3: Distribuição por tipo de Rotina
+-- ---------------------------------------------------------------------
+VAR TabelaRotinas =
+    TOPN (
+        MaxBarras,
+        ADDCOLUMNS (
+            VALUES ( D_Rotinas[Rotinas] ),
+            "@Valor", [_Rotinas_Respondidas]
+        ),
+        [@Valor], DESC
+    )
+
+VAR HtmlRotinas =
+    CONCATENATEX (
+        TabelaRotinas,
+        "<div class='bar-row'>"
+            & "<span class='bar-name'>" & D_Rotinas[Rotinas] & "</span>"
+            & "<span class='bar-track'><span class='bar-fill c-orange' style='width:"
+            & FORMAT ( [@Valor] * 100, "0" ) & "%'></span></span>"
+            & "<span class='bar-value'>" & FORMAT ( [@Valor], "0%" ) & "</span>"
+            & "</div>",
+        "",
+        [@Valor], DESC
+    )
+
+-- ---------------------------------------------------------------------
+-- Chart card 4: Distribuição por tipo de Diário
+-- ---------------------------------------------------------------------
+VAR TabelaDiarios =
+    TOPN (
+        MaxBarras,
+        ADDCOLUMNS (
+            VALUES ( D_Diarios[Diarios] ),
+            "@Valor", [_Rotinas_Respondidas]
+        ),
+        [@Valor], DESC
+    )
+
+VAR HtmlDiarios =
+    CONCATENATEX (
+        TabelaDiarios,
+        "<div class='bar-row'>"
+            & "<span class='bar-name'>" & D_Diarios[Diarios] & "</span>"
+            & "<span class='bar-track'><span class='bar-fill c-purple' style='width:"
+            & FORMAT ( [@Valor] * 100, "0" ) & "%'></span></span>"
+            & "<span class='bar-value'>" & FORMAT ( [@Valor], "0%" ) & "</span>"
+            & "</div>",
+        "",
+        [@Valor], DESC
+    )
+
+-- ---------------------------------------------------------------------
+-- Wide temporal chart (bottom)
+-- [PLACEHOLDER] Replace <D_Calendario[MesAno]> below with the real
+-- date/month label column. The trace only exposes F_Diario_De_Bordo[Ano]
+-- and F_Diario_De_Bordo[DiaSemana]; neither is a clean chronological axis
+-- for a month-over-month trend, so a proper calendar table column (or a
+-- sorted DiaSemana with an explicit weekday sort order) must be confirmed.
+-- ---------------------------------------------------------------------
+VAR TabelaTemporal =
+    ADDCOLUMNS (
+        VALUES ( F_Diario_De_Bordo[DiaSemana] ), -- [PLACEHOLDER] swap for real period axis
+        "@Valor", [_Rotinas_Respondidas]
+    )
+
+VAR QtdPontos = COUNTROWS ( TabelaTemporal )
+VAR MaxValorTemporal = MAXX ( TabelaTemporal, [@Valor] )
+VAR MinValorTemporal = MINX ( TabelaTemporal, [@Valor] )
+
+-- Builds an SVG <polyline> points list "x1,y1 x2,y2 ..." scaled to an
+-- 800x200 viewBox, spreading points evenly across the width.
+VAR PontosLinha =
+    CONCATENATEX (
+        ADDCOLUMNS (
+            TabelaTemporal,
+            "@Indice", RANKX ( TabelaTemporal, [DiaSemana], , ASC, DENSE ) - 1,
+            "@X", DIVIDE ( ( RANKX ( TabelaTemporal, [DiaSemana], , ASC, DENSE ) - 1 ) * 800, MAX ( QtdPontos - 1, 1 ) ),
+            "@Y", 190 - DIVIDE ( [@Valor] - MinValorTemporal, MAX ( MaxValorTemporal - MinValorTemporal, 0.0001 ) ) * 170
+        ),
+        FORMAT ( [@X], "0" ) & "," & FORMAT ( [@Y], "0" ),
+        " ",
+        [@Indice], ASC
+    )
+
+VAR HtmlTemporal =
+    "<svg viewBox='0 0 800 200' preserveAspectRatio='none' role='img'>"
+        & "<polyline points='" & PontosLinha & "' fill='none' stroke='#2f6fed' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' />"
+        & "</svg>"
+
+-- ---------------------------------------------------------------------
+-- Assemble page (mirrors overview/index.html structure/classes)
+-- ---------------------------------------------------------------------
+VAR Html =
+    "<html><head><style>" &
+    -- Reuse the same CSS rules as overview/index.html so the rendered
+    -- measure matches the static preview. Keep this block in sync with
+    -- the <style> section of index.html when either changes.
+    "* { box-sizing: border-box; } body { margin:0; font-family:'Segoe UI',Arial,sans-serif; background:#eef1f6; color:#1f2430; }" &
+    ".app-header { background:#0e1b33; color:#f4f6fb; padding:14px 20px; } .app-header h1 { margin:0; font-size:18px; }" &
+    ".kpi-card { background:#10203f; color:#f4f6fb; border-radius:14px; padding:18px 20px; margin:14px; }" &
+    ".kpi-value { font-size:34px; font-weight:700; }" &
+    ".grid-two-col { display:grid; grid-template-columns:repeat(2, minmax(240px,1fr)); gap:14px; margin:0 14px 14px; }" &
+    ".chart-card { background:#fff; border-radius:14px; padding:14px 16px; }" &
+    ".chart-card h2 { margin:0 0 10px; font-size:13px; color:#2a314a; }" &
+    ".bar-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:11px; }" &
+    ".bar-name { width:92px; flex:0 0 92px; text-align:right; color:#4b5474; }" &
+    ".bar-track { flex:1; background:#eef1f6; border-radius:6px; height:12px; overflow:hidden; }" &
+    ".bar-fill { height:100%; border-radius:6px; display:block; }" &
+    ".bar-value { width:34px; flex:0 0 34px; font-weight:700; }" &
+    ".c-blue{background:#2f6fed;} .c-teal{background:#12b6ac;} .c-orange{background:#f2994a;} .c-purple{background:#8c6fed;}" &
+    ".wide-chart-card { background:#fff; border-radius:14px; padding:16px 18px; margin:0 14px 14px; }" &
+    "</style></head><body>" &
+    "<div class='app-header'><h1>Diário de Bordo — Segurança</h1></div>" &
+    "<div class='kpi-card'><div class='kpi-value'>" & KpiPercentual & "</div>"
+        & "<div>Rotinas respondidas — _Measures[_Rotinas_Respondidas] · Diários (Geral): " & KpiDiarios & "</div></div>" &
+    "<div class='grid-two-col'>" &
+        "<div class='chart-card'><h2>Rotinas respondidas por Concessão</h2>" & HtmlConcessao & "</div>" &
+        "<div class='chart-card'><h2>Rotinas respondidas por Cargo</h2>" & HtmlCargo & "</div>" &
+        "<div class='chart-card'><h2>Distribuição por tipo de Rotina</h2>" & HtmlRotinas & "</div>" &
+        "<div class='chart-card'><h2>Distribuição por tipo de Diário</h2>" & HtmlDiarios & "</div>" &
+    "</div>" &
+    "<div class='wide-chart-card'><h2>Evolução temporal (eixo placeholder — ver notas)</h2>" & HtmlTemporal & "</div>" &
+    "</body></html>"
+
+RETURN
+    Html
