@@ -1,0 +1,65 @@
+Cards_Usuario_HTML = 
+
+-- ===== CONFIG: colors =====
+VAR Cor       = "#0078D4"      -- main blue (6-digit hex)
+VAR CorDest   = "#0A4F94"      -- darker blue for labels (6-digit hex)
+
+-- ===== CONFIG: texts (edit only the text in quotes) =====
+VAR Aviso = "Por favor, filtre algum usuário"
+VAR Rot1  = "Matrícula"
+VAR Rot2  = "Admissão"
+VAR Rot3  = "Diário"
+VAR Rot4  = "Cargo"
+VAR Rot5  = "Unidade"
+VAR Rot6  = "Cargo pai"
+
+-- ===== Only show data when exactly one user is filtered =====
+VAR UmUsuario = HASONEVALUE ( D_Usuarios[name] )
+
+-- Most recent row by admission date (ties: first by matrícula)
+VAR UltimaData = MAX ( View_Usuario_Descritivo[data_admissao] )
+VAR Linha =
+    CALCULATETABLE (
+        TOPN (
+            1,
+            VALUES ( View_Usuario_Descritivo[n_matricula] ),
+            CALCULATE ( MAX ( View_Usuario_Descritivo[data_admissao] ) ), DESC,
+            View_Usuario_Descritivo[n_matricula], ASC
+        )
+    )
+
+VAR V1 = SUBSTITUTE ( SUBSTITUTE ( COALESCE ( CALCULATE ( MIN ( View_Usuario_Descritivo[n_matricula] ), Linha ) & "", "-" ), "&", "&amp;" ), "<", "&lt;" )
+VAR V2 = COALESCE ( FORMAT ( UltimaData, "dd/mm/yyyy" ), "-" )
+VAR V3 = SUBSTITUTE ( SUBSTITUTE ( COALESCE ( CALCULATE ( MIN ( View_Usuario_Descritivo[diario] ), Linha ), "-" ), "&", "&amp;" ), "<", "&lt;" )
+VAR V4 = SUBSTITUTE ( SUBSTITUTE ( COALESCE ( CALCULATE ( MIN ( View_Usuario_Descritivo[cargo] ), Linha ), "-" ), "&", "&amp;" ), "<", "&lt;" )
+VAR V5 = SUBSTITUTE ( SUBSTITUTE ( COALESCE ( CALCULATE ( MIN ( View_Usuario_Descritivo[unidade] ), Linha ), "-" ), "&", "&amp;" ), "<", "&lt;" )
+VAR V6 = SUBSTITUTE ( SUBSTITUTE ( COALESCE ( CALCULATE ( MIN ( D_Usuarios[parent_cargo] ), Linha ), "-" ), "&", "&amp;" ), "<", "&lt;" )
+
+VAR Css =
+    "html,body{height:100vh;margin:0;background:#E6E6E6;}*{box-sizing:border-box;}"
+    & "body{font-family:'Segoe UI',Arial,sans-serif;font-weight:600;background:#E6E6E6;color:#1f2430;overflow:hidden;}"
+    & ".card{height:100vh;padding:1vh 1vw;background:#E6E6E6;}"
+    & ".g{height:100%;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:repeat(6,minmax(0,1fr));gap:1vh;}"
+    & ".b{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;border-radius:18px;background:#fff;border:2px solid #0A4F94;}"
+    & ".l{flex:0 0 40%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;background:#0A4F94;white-space:nowrap;font-size:clamp(12px,2.88vh,21.6px);}"
+    & ".v{flex:1;display:flex;align-items:center;justify-content:center;color:#09124F;background:#fff;padding:0 1vw;font-size:clamp(10.8px,3.12vh,24px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}"
+    & ".m{height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;color:#0A4F94;font-size:clamp(11px,2.8vh,20px);}"
+
+VAR Caixa = "<div class='b'><span class='l'>"
+VAR Meio  = "</span><span class='v'>"
+VAR Fim   = "</span></div>"
+
+VAR Grade =
+    "<div class='g'>"
+    & Caixa & Rot1 & Meio & V1 & Fim
+    & Caixa & Rot2 & Meio & V2 & Fim
+    & Caixa & Rot3 & Meio & V3 & Fim
+    & Caixa & Rot4 & Meio & V4 & Fim
+    & Caixa & Rot5 & Meio & V5 & Fim
+    & Caixa & Rot6 & Meio & V6 & Fim
+    & "</div>"
+
+RETURN
+    "<html><head><meta charset='utf-8'><style>" & Css & "</style></head><body><div class='card'>"
+    & IF ( UmUsuario, Grade, "<div class='m'>" & Aviso & "</div>" )
+    & "</div></body></html>"

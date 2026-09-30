@@ -1,0 +1,73 @@
+Tabela_Perguntas_HTML = 
+
+-- ===== CONFIG: colors =====
+VAR Cor       = "#0078D4"
+VAR CorDest   = "#0A4F94"
+
+-- ===== CONFIG: column names (edit only the text in quotes) =====
+VAR NomeCol1 = "Pergunta"
+VAR NomeCol2 = "Resposta"
+VAR NomeCol3 = "Quantidade"
+
+-- ===== Data (same filters as the other measures; remove if already in the Filters pane) =====
+VAR Tabela =
+    CALCULATETABLE (
+        ADDCOLUMNS (
+            SUMMARIZE (
+                View_Perguntas_Qualitativas,
+                View_Perguntas_Qualitativas[question],
+                View_Perguntas_Qualitativas[Resposta]
+            ),
+            "@Qtd", CALCULATE ( COUNT ( View_Perguntas_Qualitativas[Question] ) )
+        ),
+        TREATAS ( { "Grupo Ecorodovias" }, D_Usuarios[Level1] ),
+        TREATAS ( { FALSE, BLANK () }, D_Usuarios[exclude_from_goals] ),
+        TREATAS ( { BLANK () }, D_Usuarios[Terceiro ou Não] ),
+        FILTER ( KEEPFILTERS ( VALUES ( D_Diarios[Diarios] ) ),
+            NOT ( D_Diarios[Diarios] IN {
+                "Engenheiro de Obras", "Engenheiro de Segurança do Trabalho",
+                "Liderança Operacional", "Liderança Terceiros", "Supervisor",
+                "Técnico de Obras", "Técnico de Segurança do Trabalho",
+                "Engenheiro Administrativo" } ) ),
+        FILTER ( KEEPFILTERS ( VALUES ( D_Cargo[cargo] ) ),
+            NOT ( D_Cargo[cargo] IN {
+                "ENGENHEIRO SR", "TECNICO ENGENHARIA I",
+                "TECNICO ENGENHARIA II", "ENGENHEIRO PL" } ) )
+    )
+
+VAR Dados  = FILTER ( Tabela, NOT ISBLANK ( [@Qtd] ) && [@Qtd] > 0 )
+VAR DadosK = ADDCOLUMNS ( Dados, "@Chave", View_Perguntas_Qualitativas[question] & "|" & View_Perguntas_Qualitativas[Resposta] )
+VAR DadosI = ADDCOLUMNS ( DadosK, "@I", RANKX ( DadosK, [@Chave], , ASC, DENSE ) )
+
+VAR Linhas =
+    CONCATENATEX (
+        DadosI,
+        VAR Perg = SUBSTITUTE ( SUBSTITUTE ( View_Perguntas_Qualitativas[question] & "", "&", "&amp;" ), "<", "&lt;" )
+        VAR Resp = SUBSTITUTE ( SUBSTITUTE ( View_Perguntas_Qualitativas[Resposta] & "", "&", "&amp;" ), "<", "&lt;" )
+        RETURN
+            "<tr><td class='d n'>" & Perg & "</td>"
+            & "<td class='r'>" & Resp & "</td>"
+            & "<td class='d num'>" & FORMAT ( [@Qtd], "#,##0" ) & "</td></tr>",
+        "", [@I], ASC
+    )
+
+VAR Css =
+    "html,body{height:100%;margin:0;background:#E6E6E6;}*{box-sizing:border-box;}"
+    & "body{font-family:'Segoe UI',Arial,sans-serif;font-weight:600;background:#E6E6E6;color:#1f2430;overflow:hidden;}"
+    & ".card{height:100%;display:flex;flex-direction:column;padding:1.5vh 1.5vw;background:#E6E6E6;}"
+    & ".w{flex:1;min-height:0;overflow:auto;padding-right:16px;}"
+    & "table{width:100%;border-collapse:separate;border-spacing:0 4px;font-size:clamp(9px,1.7vh,12px);}"
+    & "th{position:sticky;top:0;z-index:1;background:" & Cor & ";color:#fff;font-weight:700;text-align:center;padding:8px 10px;white-space:nowrap;font-size:clamp(10px,1.95vh,14px);}"
+    & "th.d{background:" & CorDest & ";}"
+    & "th:first-child{border-radius:99px 0 0 99px;}th:last-child{border-radius:0 99px 99px 0;}"
+    & "td{padding:7px 14px;background:" & Cor & "14;color:#333;font-weight:600;text-align:center;}"
+    & "td.d{background:" & CorDest & "1f;color:#09124F;}"
+    & "td.r{text-align:left;}"
+    & "td:first-child{border-radius:99px 0 0 99px;}td:last-child{border-radius:0 99px 99px 0;}"
+    & ".num{white-space:nowrap;width:110px;}"
+
+RETURN
+    "<html><head><meta charset='utf-8'><style>" & Css & "</style></head><body><div class='card'>"
+    & "<div class='w'><table><thead><tr>"
+    & "<th class='d'>" & NomeCol1 & "</th><th>" & NomeCol2 & "</th><th class='d'>" & NomeCol3 & "</th>"
+    & "</tr></thead><tbody>" & Linhas & "</tbody></table></div></div></body></html>"

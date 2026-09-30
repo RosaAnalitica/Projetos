@@ -1,0 +1,133 @@
+Grafico_Combo_Rotinas_HTML = 
+
+-- ===== CONFIG =====
+VAR Titulo      = "% Atingimento Acumulado Por Rotina"
+VAR SubEsq      = "Rotinas respondidas"
+VAR SubDir      = "% Atingimento"
+VAR CorBarra    = "#F79A4A"
+VAR CorLinha    = "#0A4F94"
+VAR MaxItens    = 12
+
+-- ===== Data (same filters as the native visuals) =====
+VAR Tabela =
+    CALCULATETABLE (
+        ADDCOLUMNS (
+            FILTER ( VALUES ( D_Rotinas[Rotinas] ), NOT ISBLANK ( D_Rotinas[Rotinas] ) ),
+            "@Nome",  D_Rotinas[Rotinas],
+            "@Resp",  [_Rotinas_Respondidas_Switch],
+            "@Ating", [_Atingimento_Switch]
+        ),
+        TREATAS ( { "Grupo Ecorodovias" }, D_Usuarios[Level1] ),
+        TREATAS ( { FALSE, BLANK () }, D_Usuarios[exclude_from_goals] ),
+        TREATAS ( { BLANK () }, D_Usuarios[Terceiro ou Não] ),
+        FILTER ( KEEPFILTERS ( VALUES ( D_Diarios[Diarios] ) ),
+            NOT ( D_Diarios[Diarios] IN {
+                "Engenheiro de Obras", "Engenheiro de Segurança do Trabalho",
+                "Liderança Operacional", "Liderança Terceiros", "Supervisor",
+                "Técnico de Obras", "Técnico de Segurança do Trabalho",
+                "Engenheiro Administrativo" } ) ),
+        FILTER ( KEEPFILTERS ( VALUES ( D_Cargo[cargo] ) ),
+            NOT ( D_Cargo[cargo] IN {
+                "ENGENHEIRO SR", "TECNICO ENGENHARIA I",
+                "TECNICO ENGENHARIA II", "ENGENHEIRO PL" } ) )
+    )
+
+VAR Dados0 = FILTER ( Tabela, NOT ISBLANK ( [@Resp] ) )
+VAR Dados1 = ADDCOLUMNS ( Dados0, "@RN", RANKX ( Dados0, [@Nome], , ASC, DENSE ) )
+VAR Dados  = TOPN ( MaxItens, Dados1, [@Resp], DESC, [@RN], ASC )
+VAR DadosI = ADDCOLUMNS ( Dados, "@I", RANKX ( Dados, [@Resp] * 1000000 - [@RN], , DESC, DENSE ) )
+
+VAR N        = COUNTROWS ( DadosI )
+VAR _LimResp  = MAX ( CEILING ( MAXX ( DadosI, [@Resp] ), 4 ), 4 )
+VAR _LimAting = MAX ( CEILING ( MAXX ( DadosI, [@Ating] ), 0.25 ), 0.25 )
+
+VAR RegrasCss =
+    CONCATENATEX (
+        DadosI,
+        VAR X = ( [@I] - 0.5 ) / N * 100
+        VAR Y = 100 - DIVIDE ( COALESCE ( [@Ating], 0 ), _LimAting, 0 ) * 100
+        RETURN
+            ".h" & [@I] & "{height:" & SUBSTITUTE ( FORMAT ( DIVIDE ( [@Resp], _LimResp, 0 ) * 100, "0.0" ), ",", "." ) & "%}"
+            & ".p" & [@I] & "{left:" & SUBSTITUTE ( FORMAT ( X, "0.00" ), ",", "." ) & "%;top:" & SUBSTITUTE ( FORMAT ( Y, "0.00" ), ",", "." ) & "%}",
+        "", [@I], ASC
+    )
+
+VAR Pontos =
+    CONCATENATEX (
+        DadosI,
+        SUBSTITUTE ( FORMAT ( ( [@I] - 0.5 ) / N * 100, "0.00" ), ",", "." ) & ","
+            & SUBSTITUTE ( FORMAT ( 100 - DIVIDE ( COALESCE ( [@Ating], 0 ), _LimAting, 0 ) * 100, "0.00" ), ",", "." ),
+        " ", [@I], ASC
+    )
+
+VAR Colunas =
+    CONCATENATEX (
+        DadosI,
+        "<div class='c'><div class='bar h" & [@I] & "'><span class='bv'>" & FORMAT ( [@Resp], "#,##0" ) & "</span></div></div>",
+        "", [@I], ASC
+    )
+
+VAR Marcadores =
+    CONCATENATEX (
+        DadosI,
+        "<span class='dt p" & [@I] & "'></span><span class='pl p" & [@I] & "'>" & FORMAT ( [@Ating], "0%" ) & "</span>",
+        "", [@I], ASC
+    )
+
+VAR Rotulos =
+    CONCATENATEX (
+        DadosI,
+        "<div class='x'><span>" & SUBSTITUTE ( SUBSTITUTE ( [@Nome], "&", "&amp;" ), "<", "&lt;" ) & "</span></div>",
+        "", [@I], ASC
+    )
+
+-- Axis ticks (top to bottom: 100%, 75%, 50%, 25%, 0)
+VAR TicksEsq =
+    "<span>" & FORMAT ( _LimResp, "#,##0" ) & "</span><span>" & FORMAT ( _LimResp * 0.75, "#,##0" )
+    & "</span><span>" & FORMAT ( _LimResp * 0.5, "#,##0" ) & "</span><span>" & FORMAT ( _LimResp * 0.25, "#,##0" ) & "</span><span>0</span>"
+VAR TicksDir =
+    "<span>" & FORMAT ( _LimAting, "0%" ) & "</span><span>" & FORMAT ( _LimAting * 0.75, "0%" )
+    & "</span><span>" & FORMAT ( _LimAting * 0.5, "0%" ) & "</span><span>" & FORMAT ( _LimAting * 0.25, "0%" ) & "</span><span>0%</span>"
+
+VAR Css =
+    "html,body{height:100vh;margin:0;background:#fff;}*{box-sizing:border-box;}"
+    & "body{font-family:'Segoe UI',Arial,sans-serif;font-weight:600;color:#09124F;overflow:hidden;}"
+    & ".card{height:100vh;display:flex;flex-direction:column;padding:1.5vh 1.5vw;background:#fff;}"
+    & ".h{flex:0 0 auto;text-align:center;font-weight:700;color:#0A4F94;font-size:clamp(18.2px,4.06vh,30.8px);margin-bottom:1vh;}"
+    & ".main{flex:1;min-height:0;display:flex;gap:.6vw;padding-top:5.5vh;}"
+    & ".sub{flex:0 0 auto;writing-mode:vertical-rl;text-align:center;font-weight:700;font-size:clamp(14px,2.66vh,19.6px);display:flex;align-items:center;justify-content:center;}"
+    & ".sub.e{transform:rotate(180deg);color:#B8611A;}.sub.d{color:#0A4F94;}"
+    & ".axw{flex:0 0 auto;display:flex;flex-direction:column;}"
+    & ".ax{flex:1;position:relative;width:3.2em;font-size:clamp(12.6px,2.38vh,16.8px);}"
+    & ".ax span{position:absolute;transform:translateY(-50%);white-space:nowrap;}"
+    & ".ax.e span{right:0;}.ax.d span{left:0;}"
+    & ".ax span:nth-child(1){top:0;}.ax span:nth-child(2){top:25%;}.ax span:nth-child(3){top:50%;}.ax span:nth-child(4){top:75%;}.ax span:nth-child(5){top:100%;}"
+    & ".sp{flex:0 0 22%;}"
+    & ".mid{flex:1;min-width:0;display:flex;flex-direction:column;}"
+    & ".plot{position:relative;flex:1;min-height:0;border-left:2px solid #0A4F94;border-right:2px solid #0A4F94;border-bottom:2px solid #0A4F94;"
+    & "background:repeating-linear-gradient(to bottom,#d4d4d4 0,#d4d4d4 1px,transparent 1px,transparent 25%);}"
+    & ".cols{position:absolute;inset:0;display:flex;}"
+    & ".c{flex:1;position:relative;height:100%;}"
+    & ".bar{position:absolute;bottom:0;left:22%;right:22%;background:" & CorBarra & ";border-radius:6px 6px 0 0;}"
+    & ".bv{position:absolute;top:4px;left:50%;transform:translateX(-50%);background:#09124F;color:#fff;padding:0 5px;border-radius:4px;white-space:nowrap;text-align:center;font-size:clamp(11.2px,2.1vh,15.4px);font-weight:700;}"
+    & ".plot svg{position:absolute;inset:0;width:100%;height:100%;}"
+    & ".dt{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;border:3px solid " & CorLinha & ";}"
+    & ".pl{position:absolute;transform:translate(-50%,-190%);background:" & CorLinha & ";color:#fff;font-size:clamp(11.2px,2.1vh,15.4px);font-weight:700;padding:0 5px;border-radius:4px;white-space:nowrap;}"
+    & ".xs{flex:0 0 22%;display:flex;}"
+    & ".x{flex:1;min-width:0;display:flex;align-items:flex-start;justify-content:center;text-align:center;padding:.6vh 2px 0;font-size:clamp(13.44px,2.52vh,18.48px);line-height:1.1;}"
+    & ".x span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}"
+
+RETURN
+    "<html><head><meta charset='utf-8'><style>" & Css & RegrasCss & "</style></head><body><div class='card'>"
+    & "<div class='h'>" & Titulo & "</div>"
+    & "<div class='main'>"
+    & "<div class='sub e'>" & SubEsq & "</div>"
+    & "<div class='axw'><div class='ax e'>" & TicksEsq & "</div><div class='sp'></div></div>"
+    & "<div class='mid'><div class='plot'>"
+    & "<div class='cols'>" & Colunas & "</div>"
+    & "<svg viewBox='0 0 100 100' preserveAspectRatio='none'><polyline points='" & Pontos & "' fill='none' stroke='" & CorLinha & "' stroke-width='3' vector-effect='non-scaling-stroke'/></svg>"
+    & Marcadores
+    & "</div><div class='xs'>" & Rotulos & "</div></div>"
+    & "<div class='axw'><div class='ax d'>" & TicksDir & "</div><div class='sp'></div></div>"
+    & "<div class='sub d'>" & SubDir & "</div>"
+    & "</div></div></body></html>"

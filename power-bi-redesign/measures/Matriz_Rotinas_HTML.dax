@@ -1,0 +1,93 @@
+Matriz_Rotinas_HTML = 
+
+-- ===== CONFIG: colors =====
+VAR Cor     = "#0078D4"      -- main blue (6-digit hex)
+VAR CorDest = "#0A4F94"      -- darker blue (6-digit hex)
+
+-- ===== CONFIG: column names (edit only the text in quotes) =====
+VAR NomeCol1 = "Rotina"
+VAR NomeCol2 = "Frequência"
+VAR NomeCol3 = "Respondidas"
+VAR NomeCol4 = "Meta"
+VAR NomeCol5 = "Atingimento"
+
+-- ===== Rows x values, with the same filters as the native visuals =====
+VAR Tabela =
+    CALCULATETABLE (
+        ADDCOLUMNS (
+            CROSSJOIN (
+                FILTER ( VALUES ( D_Rotinas[Rotinas] ), NOT ISBLANK ( D_Rotinas[Rotinas] ) ),
+                VALUES ( View_DIario_Rotina_Frequencia[Frequencia] )
+            ),
+            "@Resp",  [_Rotinas_Respondidas_Switch],
+            "@Meta",  [_Meta_Real_Switch],
+            "@Ating", [_Atingimento_Switch]
+        ),
+        TREATAS ( { "Grupo Ecorodovias" }, D_Usuarios[Level1] ),
+        TREATAS ( { FALSE, BLANK () }, D_Usuarios[exclude_from_goals] ),
+        TREATAS ( { BLANK () }, D_Usuarios[Terceiro ou Não] ),
+        FILTER ( KEEPFILTERS ( VALUES ( D_Diarios[Diarios] ) ),
+            NOT ( D_Diarios[Diarios] IN {
+                "Engenheiro de Obras", "Engenheiro de Segurança do Trabalho",
+                "Liderança Operacional", "Liderança Terceiros", "Supervisor",
+                "Técnico de Obras", "Técnico de Segurança do Trabalho",
+                "Engenheiro Administrativo" } ) ),
+        FILTER ( KEEPFILTERS ( VALUES ( D_Cargo[cargo] ) ),
+            NOT ( D_Cargo[cargo] IN {
+                "ENGENHEIRO SR", "TECNICO ENGENHARIA I",
+                "TECNICO ENGENHARIA II", "ENGENHEIRO PL" } ) )
+    )
+
+VAR Dados  = FILTER ( Tabela, NOT ISBLANK ( [@Resp] ) || NOT ISBLANK ( [@Meta] ) )
+VAR DadosK = ADDCOLUMNS ( Dados, "@Chave", D_Rotinas[Rotinas] & "|" & View_DIario_Rotina_Frequencia[Frequencia] )
+VAR DadosI = ADDCOLUMNS ( DadosK, "@I", RANKX ( DadosK, [@Chave], , ASC, DENSE ) )
+
+-- Progress-bar width per row, in <style> (inline styles get stripped)
+VAR RegrasCss =
+    CONCATENATEX (
+        DadosI,
+        ".a" & [@I] & "{width:"
+            & SUBSTITUTE ( FORMAT ( MIN ( MAX ( COALESCE ( [@Ating], 0 ), 0 ), 1 ) * 100, "0.0" ), ",", "." )
+            & "%}",
+        "", [@I], ASC
+    )
+
+VAR Linhas =
+    CONCATENATEX (
+        DadosI,
+        VAR Rot = SUBSTITUTE ( SUBSTITUTE ( D_Rotinas[Rotinas], "&", "&amp;" ), "<", "&lt;" )
+        VAR Fre = SUBSTITUTE ( SUBSTITUTE ( View_DIario_Rotina_Frequencia[Frequencia], "&", "&amp;" ), "<", "&lt;" )
+        RETURN
+            "<tr><td class='n'>" & Rot & "</td>"
+            & "<td>" & Fre & "</td>"
+            & "<td class='d num'>" & FORMAT ( [@Resp], "#,##0" ) & "</td>"
+            & "<td class='d num'>" & FORMAT ( [@Meta], "#,##0" ) & "</td>"
+            & "<td class='d at'><span class='t'><span class='f a" & [@I] & "'></span></span>"
+            & "<span class='pc'>" & FORMAT ( [@Ating], "0%" ) & "</span></td></tr>",
+        "", [@I], ASC
+    )
+
+VAR Css =
+    "html,body{height:100%;margin:0;}*{box-sizing:border-box;}"
+    & "body{font-family:'Segoe UI',Arial,sans-serif;font-weight:600;background:#E6E6E6;color:#1f2430;overflow:hidden;}"
+    & ".card{height:100%;display:flex;flex-direction:column;padding:1.5vh 1.5vw;background:#E6E6E6;}"
+    & ".w{flex:1;min-height:0;overflow:auto;padding-right:16px;}"
+    & "table{width:100%;border-collapse:separate;border-spacing:0 4px;font-size:clamp(11.7px,2.21vh,15.6px);}"
+    & "th{position:sticky;top:0;z-index:1;background:" & Cor & ";color:#fff;font-weight:700;text-align:center;padding:8px 10px;white-space:nowrap;font-size:clamp(13px,2.535vh,18.2px);}"
+    & "th.d{background:" & CorDest & ";}"
+    & "th:first-child{border-radius:99px 0 0 99px;}th:last-child{border-radius:0 99px 99px 0;}"
+    & "td{padding:7px 10px;background:" & Cor & "14;color:#333;font-weight:600;text-align:center;}"
+    & "td.d{background:" & CorDest & "1f;color:#09124F;}"
+    & "td:first-child{border-radius:99px 0 0 99px;}td:last-child{border-radius:0 99px 99px 0;}"
+    & ".num{white-space:nowrap;}"
+    & ".at{white-space:nowrap;min-width:120px;}"
+    & ".t{display:inline-block;vertical-align:middle;width:70px;height:10px;background:" & CorDest & "33;border-radius:99px;overflow:hidden;}"
+    & ".f{display:block;height:100%;border-radius:99px;background:" & CorDest & ";}"
+    & ".pc{display:inline-block;vertical-align:middle;margin-left:8px;}"
+
+RETURN
+    "<html><head><meta charset='utf-8'><style>" & Css & RegrasCss & "</style></head><body><div class='card'>"
+    & "<div class='w'><table><thead><tr>"
+    & "<th>" & NomeCol1 & "</th><th>" & NomeCol2 & "</th>"
+    & "<th class='d'>" & NomeCol3 & "</th><th class='d'>" & NomeCol4 & "</th><th class='d'>" & NomeCol5 & "</th>"
+    & "</tr></thead><tbody>" & Linhas & "</tbody></table></div></div></body></html>"

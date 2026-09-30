@@ -1,0 +1,64 @@
+Grafico_Barras_Cargo_HTML = 
+
+-- ===== CONFIG: only edit this block for each chart =====
+VAR Titulo = "Rotinas Por Cargo"
+VAR Cor    = "#5B6CE0"                          -- bar color (hex, 6 digits)
+VAR Tabela =
+    ADDCOLUMNS (
+        VALUES ( D_Cargo[cargo] ),      -- 1) AXIS: the column here...
+        "@Nome", D_Cargo[cargo],        --    ...and here (same column)
+        "@V", [_Rotinas_Respondidas]            -- 2) MEASURE
+    )
+-- ========================================================
+
+-- ===== Generic part: do not edit =====
+VAR Dados   = FILTER ( Tabela, NOT ISBLANK ( [@V] ) && NOT ISBLANK ( [@Nome] ) )
+VAR N       = COUNTROWS ( Dados )
+VAR Maximo  = MAXX ( Dados, [@V] )
+VAR DadosR  = ADDCOLUMNS ( Dados, "@R", RANKX ( Dados, [@V], , DESC, DENSE ) )
+
+-- One CSS rule per rank: width + opacity live in <style>, not inline.
+-- SUBSTITUTE forces a dot as the decimal separator, whatever the locale.
+VAR RegrasCss =
+    CONCATENATEX (
+        DadosR,
+        ".f" & [@R] & "{width:"
+            & SUBSTITUTE ( FORMAT ( DIVIDE ( [@V], Maximo, 0 ) * 100, "0.0" ), ",", "." )
+            & "%;opacity:"
+            & SUBSTITUTE ( FORMAT ( 1 - 0.45 * DIVIDE ( [@R] - 1, MAX ( N - 1, 1 ) ), "0.00" ), ",", "." )
+            & "}",
+        "", [@R], ASC
+    )
+
+VAR Linhas =
+    CONCATENATEX (
+        DadosR,
+        VAR Nome = SUBSTITUTE ( SUBSTITUTE ( [@Nome], "&", "&amp;" ), "<", "&lt;" )
+        VAR Txt  =
+            IF ( [@V] >= 1000000, FORMAT ( [@V] / 1000000, "0.0" ) & " Mi",
+            IF ( [@V] >= 1000,    FORMAT ( [@V] / 1000, "0.0" ) & " Mil",
+                                  FORMAT ( [@V], "0" ) ) )
+        RETURN
+            "<div class='r'><span class='n'>" & Nome & "</span>"
+            & "<span class='t'><span class='f f" & [@R] & "'></span></span>"
+            & "<span class='v'>" & Txt & "</span></div>",
+        "", [@V], DESC
+    )
+
+VAR Css =
+    "html,body{height:100%;margin:0;}*{box-sizing:border-box;}"
+    & "body{font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#1f2430;overflow:hidden;}"
+    & ".card{height:100%;display:flex;flex-direction:column;padding:1.5vh 1.5vw;}"
+    & ".h{display:flex;align-items:center;gap:.6vw;flex:0 0 auto;margin-bottom:1vh;font-weight:600;font-size:clamp(11px,2.4vh,18px);}"
+    & ".dot{width:.9em;height:.9em;border-radius:3px;background:" & Cor & ";}"
+    & ".l{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;}"
+    & ".r{flex:1 0 24px;max-height:48px;display:flex;align-items:center;gap:1vw;padding-right:16px;font-size:clamp(9px,1.9vh,13px);}"
+    & ".n{flex:0 0 32%;max-width:32%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#333;font-weight:700;}"
+    & ".t{flex:1;height:38%;max-height:16px;min-width:0;background:" & Cor & "1f;border-radius:99px;overflow:hidden;}"
+    & ".f{display:block;height:100%;border-radius:99px;background:" & Cor & ";}"
+    & ".v{flex:0 0 12%;text-align:right;font-weight:700;white-space:nowrap;}"
+
+RETURN
+    "<html><head><meta charset='utf-8'><style>" & Css & RegrasCss & "</style></head><body><div class='card'>"
+    & "<div class='h'><span class='dot'></span>" & Titulo & "</div>"
+    & "<div class='l'>" & Linhas & "</div></div></body></html>"
